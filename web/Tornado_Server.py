@@ -2,17 +2,17 @@ import tornado.web
 import tornado.ioloop
 import tornado.httpserver
 
-import os
-
 from web.frontend.profile import MainProfileHandler, SubmissionsHandler, LoginHijack, NewSubmissionHandler, SubmitHandler
 from frontend import ui_modules
 from web.frontend.profile import RemoveSubmissionHandler
 from backend import GetAllSubmissionsHandler, GetSubmissionHandler, ModifySubmissionHandler, AuthenticationHandler
 
+import directories
+
 settings = {
     "cookie_secret": "test_cookie",
     "login_url": "/login",
-    "template_path": os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates"),
+    "template_path": directories.template_directory,
     "ui_modules": ui_modules,
     #"debug": True,
 }

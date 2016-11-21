@@ -7,12 +7,15 @@ from sqlalchemy.exc import IntegrityError
 import json
 from sqlalchemy.sql.sqltypes import Text
 import copy
+import directories
+import os
 
-
-_engine = create_engine('sqlite:////Users/Ben/Dropbox/3DPrinter/3DPrinter/data/test.db', echo=False)
+engine_path = os.path.join(directories.data_directory, "test.db").replace("\\", "/").replace("C:/", "sqlite:////")
+#_engine = create_engine('sqlite:////Users/Ben/Dropbox/3DPrinter/3DPrinter/data/test.db', echo=False)
+_engine = create_engine(engine_path)
 SQLBase = declarative_base(bind=_engine)
 
-fp = open('C:/Users/Ben/Dropbox/3DPrinter/3DPrinter/data/accounts.json')
+fp = open(os.path.join(directories.data_directory, 'accounts.json'))
 account_info = json.load(fp)
 fp.close()
 

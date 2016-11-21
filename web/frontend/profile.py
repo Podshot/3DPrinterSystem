@@ -8,7 +8,7 @@ import glob
 from utils import SQLWrapper
 import uuid
 
-upload_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "uploads")
+import directories
 
 class BaseProfileHandler(tornado.web.RequestHandler):
     
@@ -100,7 +100,7 @@ class SubmitHandler(BaseProfileHandler):
                 
             submission_id = str(uuid.uuid4())
             SQLWrapper.add_submission(submission_id, name, submission_data)
-            file_path = os.path.join(upload_path, submission_id + "$$" + filename)
+            file_path = os.path.join(directories.upload_directory, submission_id + "$$" + filename)
             
             file_gz_obj = GzipFile(file_path + ".gz", 'wb')
             file_gz_obj.write(info['body'])
@@ -116,10 +116,10 @@ class RemoveSubmissionHandler(BaseProfileHandler):
         if submission.author == name:
             SQLWrapper.delete_submission(submission_id)
         self.redirect("/profile/submissions")
-        for f in glob.glob(os.path.join(upload_path, "*.stl.gz")):
+        for f in glob.glob(os.path.join(directories.upload_directory, "*.stl.gz")):
             f = os.path.basename(f)
             if f.startswith(submission_id + "$$"):
-                os.remove(os.path.join(upload_path, f))
+                os.remove(os.path.join(directories.upload_directory, f))
         
 class SubmissionsHandler(BaseProfileHandler):
     
