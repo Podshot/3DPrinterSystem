@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+        <style>
+            p.details {
+                margin-left: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="/submit" method="post" enctype="multipart/form-data">
+            Submission Title: <input type="text" name="title" required=true></input>
+            <br>
+            Quality: <select name="quality" id="quality">
+                        <option value="high">High (0.1 mm)</option>
+                        <option value="normal">Normal (0.2 mm)</option>
+                        <option value="low">Low (0.3 mm)</option>
+                        <option value="custom">Custom</option>
+                    </select>
+            <div id="custom_resolution" style="display:none;">
+                <label for="custom_quality">Custom Resolution</label>
+                <input type="text" name="custom_quality" id='custom_quality_field' placeholder="Resolution Hieght (in mm)"/>
+            </div>
+            <br />
+            Color: <select name="color">
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="black">Black</option>
+                    <option value="white">White</option>
+                   </select>
+            <br />
+            Rafts: <input type="checkbox" name="rafts" checked="true">
+            <br />
+            Supports: <input type="checkbox" name="supports" checked="false">
+            <br />
+            Infill: <input type="number" name="infill" value="10" min="1" max="100">
+            <br />
+            <input type="file" name="file" required=true/>
+            <br />
+            <br />
+            Is this submission for a class assignment? <input type="checkbox" name="assignment" id="assignment">
+            <div id="assignment_fields" style="display:none;">
+                <label for="class_name">Class Name:</label>
+                <input type="text" name="class_name" id="class_field">
+                <br />
+                <label for="teacher">Teacher:</label>
+                <input type="text" name="teacher" id='teacher_field'>
+                <br />
+                <label for="due_date">Due Date:</label>
+                <input type="date" name="due_date" id='due_date_field' />
+                <br />
+                Notes: <p class="details"> 
+                Marking a submission as an assignment does not guarantee completion by the Due Date. 
+                <br />
+                All submissions marked as an assignment will be checked for validity before being printed.
+                </p>
+            </div>
+            <br />
+			{% if is_robotics %}
+				Is this for the Robotics Team? <input type="checkbox" name="for_robotics" id="robotics_field">
+				<br />
+			{% end %}
+            <input type="submit" value="Submit" />
+        </form>
+        <script>
+        $('#quality').on('change', function() {
+            var selected = $(this).val();
+            if (selected == "custom") {
+                $('#custom_resolution').show();
+				$('#custom_quality_field').attr('required', '');
+            } else {
+                $('#custom_resolution').hide();
+				$('#custom_quality_field').removeAttr('required');
+            }
+        });
+        </script>
+        <script>
+        $('#assignment').change(function(event) {
+            var checkbox = event.target;
+            if (checkbox.checked) {
+                $('#assignment_fields').show();
+				$('#class_field').attr('required', '');
+				$('#teacher_field').attr('required', '');
+				$('#due_date_field').attr('required', '');
+            } else {
+                $('#assignment_fields').hide();
+				$('#class_field').removeAttr('required');
+				$('#teacher_field').removeAttr('required');
+				$('#due_date_field').removeAttr('required');
+            }
+        });
+        </script>
+    </body>
+</html>

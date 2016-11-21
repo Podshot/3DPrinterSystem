@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <style>
+            h3 {
+                text-align: center;
+            }
+            
+            .button {
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 15px;
+                cursor: pointer;
+            }
+            
+            .main {
+                display: table;
+                margin: 0 auto;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h3>Welcome {{ user }}!</h3>
+        <br>
+        <br>
+        <!-- <div style="text-align: center;"> -->
+        <div style="text-align: center">
+            <a href="/new_submission" class="button">Submit a 3D Model</a><a href="/profile/submissions" class="button">View submitted 3D Models</a>
+        </div>
+    </body>
+</html>

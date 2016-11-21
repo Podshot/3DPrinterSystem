@@ -1,0 +1,12 @@
+<html>
+<head></head>
+<body>
+{% if ids %}
+  {% for i in xrange(len(ids)) %}
+    {% module Submission(ids[i]) %}
+  {% end %}
+{% else %}
+    <b>You have not submitted any 3D models to print</b>
+{% end %}
+</body>
+</html>

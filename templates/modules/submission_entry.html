@@ -1,0 +1,32 @@
+<!-- <div class="{{ status }}"> -->
+<div class="submission-{{ status }}">
+    <p class="content">
+        <b>{{ title }}</b> (Submitted on {{ date }})<a class="actions" href="/profile/submissions/remove/{{ sub_id }}">Remove</a><br>
+        <p class="job_details">
+            Requested Color: {{ options['color'].capitalize() }}
+            <br />           
+            Detail Level: {{ options['detail_name'].capitalize() }} ({{ options['detail_height'] }}mm)
+            <br />
+            Rafts: {{ str(options['rafts']).capitalize() }}
+            <br />
+            Supports: {{ str(options['supports']).capitalize() }}
+            <br />
+            Infill: {{ options['infill'] }}%
+			{% if assignment != {} %}
+			<h4 class="assignment_header">Assignment Details</h4>
+			<p class="class_details">
+				Class: {{ assignment['class_name'] }}
+				<br />
+				Teacher: {{ assignment['teacher'] }}
+				<br />
+				Due Date: {{ datetime.datetime.strftime(datetime.datetime.strptime(assignment['due_date'], "%m-%d-%Y"),"%B %d, %Y")}}
+			</p>
+			{% end %}
+			<br />
+			{% if for_robotics %}
+			For Robotics: True
+			{% end %}
+        </p>
+    </p>
+</div>
+<br>
