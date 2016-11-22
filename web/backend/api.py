@@ -2,15 +2,14 @@ import tornado.web
 from utils import SQLWrapper
 import requests
 import random
-import sys
 from frontend.profile import LoginHijack
 import json
 
-class Authentication:
+class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     
     def __init__(self):
-        self._auths = {}
-        
+        self.auths = {}
+    
     def push(self, ip):
         if ip in self._auths.values():
             self.pop_by_ip(ip)
@@ -32,7 +31,7 @@ class Authentication:
     def is_authenticated(self, ip, aid=-1):
         return (self._auths.get(int(aid), '0.0.0.0') == ip)
     
-    def api_authenticated(self, func):
+    def _api_authenticated(self, func):
         
         def wrapper(obj, *args, **kwargs):
             auth_id = -1
@@ -52,14 +51,27 @@ class Authentication:
             
         return wrapper
     
-    
-auth_handler = Authentication()
+    def api_authenticated(self):
+        auth_id = -1
+        if self.request.method.upper() == "POST" and self.request.headers.get("Content-Type") == "application/json":
+            payload = json.loads(self.request.body.decode('utf-8'))
+            auth_id = payload.get("auth_id", -1)
+            setattr(self.request, "json", payload)
+        else:
+            auth_id = self.get_argument("auth_id", default=-1)
+        if self.is_authenticated(self.request.remote_ip, auth_id):
+            return True
+        else:
+            self.set_status(405)
+            self.set_header("Content-Type", "application/json")
+            self.write({"error": "Invalid authentication ID"})
+            self.flush()
+        return False
+        
 
-class AuthenticationHandler(tornado.web.RequestHandler):
+class AuthenticationHandler(AuthenticatedHandlerBase):
     
     def post(self):
-        print dir(self.request)
-        print self.request.body
         username = self.get_argument("username")
         password = self.get_argument("password")
         login = {
@@ -71,7 +83,7 @@ class AuthenticationHandler(tornado.web.RequestHandler):
         if LoginHijack._login_successful(response):
             account = SQLWrapper.get_account(username)
             if account.is_admin:
-                a_id = auth_handler.push(self.request.remote_ip)
+                a_id = self.push(self.request.remote_ip)
                 self.set_header("Content-Type", "application/json")
                 self.write({"auth_id": a_id})
             else:
@@ -83,37 +95,37 @@ class AuthenticationHandler(tornado.web.RequestHandler):
         self.flush()
                 
                 
-class GetAllSubmissionsHandler(tornado.web.RequestHandler):
+class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
     
-    @auth_handler.api_authenticated
     def get(self):
-        self.set_header("Content-Type", "application/json")
-        self.write({"submissions": [sid.id for sid in SQLWrapper.get_all_submissions()]})
-        self.flush()
+        if self.api_authenticated():
+            self.set_header("Content-Type", "application/json")
+            self.write({"submissions": [sid.id for sid in SQLWrapper.get_all_submissions()]})
+            self.flush()
         
-class GetSubmissionHandler(tornado.web.RequestHandler):
+class GetSubmissionHandler(AuthenticatedHandlerBase):
     
-    @auth_handler.api_authenticated
     def get(self):
-        submission_id = self.get_argument("submission")
-        self.set_header("Content-Type", "application/json")
-        self.write(SQLWrapper.get_submission(submission_id).data)
-        self.flush()
+        if self.api_authenticated():
+            submission_id = self.get_argument("submission")
+            self.set_header("Content-Type", "application/json")
+            self.write(SQLWrapper.get_submission(submission_id).data)
+            self.flush()
         
-class ModifySubmissionHandler(tornado.web.RequestHandler):
+class ModifySubmissionHandler(AuthenticatedHandlerBase):
     
-    @auth_handler.api_authenticated
     def post(self): #TODO: Add authentication
-        payload = self.request.json
-        submission_id = payload["submission"]
-        data = payload["data"]
-        if SQLWrapper.has_been_submitted(submission_id):
-            SQLWrapper.update_submission(submission_id, data)
-            self.set_header("Content-Type", "application/json")
-            self.write({"result": 1})
-            self.flush()
-        else:
-            self.set_header("Content-Type", "application/json")
-            self.write({"result": -1})
-            self.flush()
+        if self.api_authenticated():
+            payload = self.request.json
+            submission_id = payload["submission"]
+            data = payload["data"]
+            if SQLWrapper.has_been_submitted(submission_id):
+                SQLWrapper.update_submission(submission_id, data)
+                self.set_header("Content-Type", "application/json")
+                self.write({"result": 1})
+                self.flush()
+            else:
+                self.set_header("Content-Type", "application/json")
+                self.write({"result": -1})
+                self.flush()
         
