@@ -7,9 +7,9 @@ import json
 
 class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     
-    def initialize(self):
-        if not hasattr(self, 'auths'):
-            self.auths = {}
+    def __init__(self, application, request, **kwargs):
+        super(AuthenticatedHandlerBase, self).__init__(self, application, request, **kwargs)
+        self.auths = {}
     
     def push(self, ip):
         if ip in self._auths.values():
