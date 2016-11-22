@@ -32,27 +32,6 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     def is_authenticated(self, ip, aid=-1):
         return (self._auths.get(int(aid), '0.0.0.0') == ip)
     
-    def _api_authenticated(self, func):
-        
-        def wrapper(obj, *args, **kwargs):
-            auth_id = -1
-            ip = (self.request.remote_ip if 'X-Forwarded-For' not in self.request.headers else self.request.headers['X-Forwarded-For'])
-            if obj.request.method.upper() == "POST" and obj.request.headers.get("Content-Type") == "application/json":
-                payload = json.loads(obj.request.body.decode('utf-8'))
-                auth_id = payload.get("auth_id", -1)
-                setattr(obj.request, "json", payload)
-            else:
-                auth_id = obj.get_argument("auth_id", default=-1)
-            if self.is_authenticated(ip, auth_id):
-                return func(obj, *args, **kwargs)
-            else:
-                obj.set_status(405)
-                obj.set_header("Content-Type", "application/json")
-                obj.write({"error": "Invalid authentication ID"})
-                obj.flush()
-            
-        return wrapper
-    
     def api_authenticated(self):
         auth_id = -1
         ip = (self.request.remote_ip if 'X-Forwarded-For' not in self.request.headers else self.request.headers['X-Forwarded-For'])
@@ -63,9 +42,9 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
         else:
             auth_id = self.get_argument("auth_id", default=-1)
         print "================="
-        print "IP: {}".format(self.request.remote_ip)
+        print "IP: {}".format(ip)
         print "ID: {}".format(auth_id)
-        print "Headers: {}".format(repr(self.request))
+        print "Headers: {}".format(self.request.headers['X-Forwarded-For'])
         print "================="
         if self.is_authenticated(ip, auth_id):
             return True
