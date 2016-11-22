@@ -1,1 +1,1 @@
-web: python web\Tornado_Server.py
+web: python web/Tornado_Server.py
