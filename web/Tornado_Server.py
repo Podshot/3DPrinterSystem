@@ -2,12 +2,12 @@ import tornado.web
 import tornado.ioloop
 import tornado.httpserver
 
-from web.frontend.profile import MainProfileHandler, SubmissionsHandler, LoginHijack, NewSubmissionHandler, SubmitHandler
+from frontend.profile import MainProfileHandler, SubmissionsHandler, LoginHijack, NewSubmissionHandler, SubmitHandler
 from frontend import ui_modules
-from web.frontend.profile import RemoveSubmissionHandler
+from frontend.profile import RemoveSubmissionHandler
 from backend import GetAllSubmissionsHandler, GetSubmissionHandler, ModifySubmissionHandler, AuthenticationHandler
 
-import directories
+from utils import directories
 
 settings = {
     "cookie_secret": "test_cookie",

@@ -5,10 +5,9 @@ from datetime import datetime
 import os
 from gzip import GzipFile
 import glob
-from utils import SQLWrapper
 import uuid
 
-import directories
+from utils import directories, SQLWrapper
 
 class BaseProfileHandler(tornado.web.RequestHandler):
     
