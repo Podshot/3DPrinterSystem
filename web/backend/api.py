@@ -12,8 +12,8 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
         self._auths = []
     
     def push(self, ip):
-        if ip in self._auths.values():
-            self.pop_by_ip(ip)
+        #if ip in self._auths.values():
+        #    self.pop_by_ip(ip)
         a_id = random.randint(0, 1000)
         self._auths.append(a_id)
         print self._auths
