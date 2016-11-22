@@ -60,6 +60,10 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             setattr(self.request, "json", payload)
         else:
             auth_id = self.get_argument("auth_id", default=-1)
+        print "================="
+        print "IP: {}".format(self.request.remote_ip)
+        print "ID: {}".format(auth_id)
+        print "================="
         if self.is_authenticated(self.request.remote_ip, auth_id):
             return True
         else:
