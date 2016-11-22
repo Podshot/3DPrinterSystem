@@ -9,7 +9,7 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     
     def __init__(self, application, request, **kwargs):
         super(AuthenticatedHandlerBase, self).__init__(application, request, **kwargs)
-        self._auths = []
+        self._auths = {}
     
     def push(self, ip):
         if ip in self._auths.values():
