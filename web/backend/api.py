@@ -12,10 +12,10 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
         self._auths = []
     
     def push(self, ip):
-        #if ip in self._auths.values():
-        #    self.pop_by_ip(ip)
+        if ip in self._auths.values():
+            self.pop_by_ip(ip)
         a_id = random.randint(0, 1000)
-        self._auths.append(a_id)
+        self._auths[a_id] = ip
         print self._auths
         return a_id
         
@@ -30,12 +30,7 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             del self._auths[aid]
         
     def is_authenticated(self, ip, aid=-1):
-        try:
-            self._auths.index(aid)
-            return True
-        except:
-            return False
-        #return (self._auths.get(int(aid), '0.0.0.0') == ip)
+        return (self._auths.get(int(aid), '0.0.0.0') == ip)
     
     def _api_authenticated(self, func):
         
@@ -68,6 +63,7 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
         print "================="
         print "IP: {}".format(self.request.remote_ip)
         print "ID: {}".format(auth_id)
+        print "Headers: {}".format(repr(self.request))
         print "================="
         if self.is_authenticated(self.request.remote_ip, auth_id):
             return True
