@@ -10,7 +10,7 @@ import copy
 import directories
 import os
 
-engine_path = os.path.join(directories.data_directory, "test.db").replace("\\", "/").replace("C:/", "sqlite:////")
+engine_path =  "sqlite:////" + os.path.join(directories.data_directory, "test.db").replace("\\", "/").replace("C:/", "")
 #_engine = create_engine('sqlite:////Users/Ben/Dropbox/3DPrinter/3DPrinter/data/test.db', echo=False)
 _engine = create_engine(engine_path)
 SQLBase = declarative_base(bind=_engine)
