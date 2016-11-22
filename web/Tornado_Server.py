@@ -2,6 +2,8 @@ import tornado.web
 import tornado.ioloop
 import tornado.httpserver
 
+import os
+
 from frontend.profile import MainProfileHandler, SubmissionsHandler, LoginHijack, NewSubmissionHandler, SubmitHandler
 from frontend import ui_modules
 from frontend.profile import RemoveSubmissionHandler
