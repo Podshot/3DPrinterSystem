@@ -8,7 +8,7 @@ import json
 class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     
     def __init__(self, application, request, **kwargs):
-        super(AuthenticatedHandlerBase, self).__init__(self, application, request, **kwargs)
+        super(AuthenticatedHandlerBase, self).__init__(application, request, **kwargs)
         self.auths = {}
     
     def push(self, ip):
