@@ -91,7 +91,7 @@ class AuthenticationHandler(AuthenticatedHandlerBase):
         if LoginHijack._login_successful(response):
             account = SQLWrapper.get_account(username)
             if account.is_admin:
-                a_id = self.push(self.request.remote_ip)
+                a_id = self.push(self.request.remote_ip if 'X-Forwarded-For' not in self.request.headers else self.request.headers['X-Forwarded-For'])
                 self.set_header("Content-Type", "application/json")
                 self.write({"auth_id": a_id})
             else:
