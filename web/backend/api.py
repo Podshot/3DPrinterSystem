@@ -9,13 +9,13 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
     
     def __init__(self, application, request, **kwargs):
         super(AuthenticatedHandlerBase, self).__init__(application, request, **kwargs)
-        self._auths = {}
+        self._auths = []
     
     def push(self, ip):
         if ip in self._auths.values():
             self.pop_by_ip(ip)
         a_id = random.randint(0, 1000)
-        self._auths[a_id] = ip
+        self._auths.append(a_id)
         print self._auths
         return a_id
         
@@ -30,7 +30,12 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             del self._auths[aid]
         
     def is_authenticated(self, ip, aid=-1):
-        return (self._auths.get(int(aid), '0.0.0.0') == ip)
+        try:
+            self._auths.index(aid)
+            return True
+        except:
+            return False
+        #return (self._auths.get(int(aid), '0.0.0.0') == ip)
     
     def _api_authenticated(self, func):
         
