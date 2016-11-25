@@ -46,7 +46,7 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
         print "IP: {}".format(ip)
         print "ID: {}".format(auth_id)
         print "Headers: {}".format(self.request.headers['X-Forwarded-For'])
-        print "Auths: {}".format(self._auths)
+        print "Auths: {}".format(self.__class__._auths)
         print "================="
         if self.is_authenticated(ip, auth_id):
             return True
