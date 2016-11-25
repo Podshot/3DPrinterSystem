@@ -6,32 +6,32 @@ from frontend.profile import LoginHijack
 import json
 
 class AuthenticatedHandlerBase(tornado.web.RequestHandler):
+    _auths = {}
     
     def __init__(self, application, request, **kwargs):
         super(AuthenticatedHandlerBase, self).__init__(application, request, **kwargs)
-        self._auths = {}
     
     def push(self, ip):
         if ip in self._auths.values():
             self.pop_by_ip(ip)
         a_id = random.randint(0, 1000)
-        self._auths[a_id] = ip
+        self.__class__._auths[a_id] = ip
         print self._auths
         return a_id
         
     def pop_by_ip(self, ip):
-        for (key, value) in self._auths.items():
+        for (key, value) in self.__class__._auths.items():
             if value == ip:
-                del self._auths[key]
+                del self.__class__._auths[key]
                 break
     
     def pop_by_id(self, aid):
-        if aid in self._auths:
-            del self._auths[aid]
+        if aid in self.__class__._auths:
+            del self.__class__._auths[aid]
         
     def is_authenticated(self, ip, aid=-1):
-        print "Result: {}".format((self._auths.get(int(aid), '0.0.0.0') == ip))
-        return (self._auths.get(int(aid), '0.0.0.0') == ip)
+        print "Result: {}".format((self.__class__._auths.get(int(aid), '0.0.0.0') == ip))
+        return (self.__class__._auths.get(int(aid), '0.0.0.0') == ip)
     
     def api_authenticated(self):
         auth_id = -1
