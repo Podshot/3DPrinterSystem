@@ -16,7 +16,6 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             self.pop_by_ip(ip)
         a_id = random.randint(0, 1000)
         self.__class__._auths[a_id] = ip
-        print self._auths
         return a_id
         
     def pop_by_ip(self, ip):
@@ -30,7 +29,6 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             del self.__class__._auths[aid]
         
     def is_authenticated(self, ip, aid=-1):
-        print "Result: {}".format((self.__class__._auths.get(int(aid), '0.0.0.0') == ip))
         return (self.__class__._auths.get(int(aid), '0.0.0.0') == ip)
     
     def api_authenticated(self):
@@ -42,12 +40,6 @@ class AuthenticatedHandlerBase(tornado.web.RequestHandler):
             setattr(self.request, "json", payload)
         else:
             auth_id = self.get_argument("auth_id", default=-1)
-        print "================="
-        print "IP: {}".format(ip)
-        print "ID: {}".format(auth_id)
-        print "Headers: {}".format(self.request.headers['X-Forwarded-For'])
-        print "Auths: {}".format(self.__class__._auths)
-        print "================="
         if self.is_authenticated(ip, auth_id):
             return True
         else:
@@ -95,7 +87,6 @@ class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
                 for sid in SQLWrapper.get_all_submissions():
                     data = sid.data
                     data["id"] = sid.id
-                    print data
                     submissions.append(data)
                 self.write({"submissions": submissions})
             else:
