@@ -95,7 +95,7 @@ class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
                 for sid in SQLWrapper.get_all_submissions():
                     data = sid.data
                     data["id"] = sid.id
-                    print sub_data
+                    print data
                     submissions.append(data)
                 self.write({"submissions": submissions})
             else:
