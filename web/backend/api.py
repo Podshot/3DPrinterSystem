@@ -88,8 +88,17 @@ class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
     
     def get(self):
         if self.api_authenticated():
+            parameters = self.get_argument("with_data", default=False)
             self.set_header("Content-Type", "application/json")
-            self.write({"submissions": [sid.id for sid in SQLWrapper.get_all_submissions()]})
+            if parameters:
+                submissions = []
+                for sid in SQLWrapper.get_all_submissions():
+                    sub_data = {sid.id: sid.data}
+                    print sub_data
+                    submissions.append(sub_data)
+                self.write({"submissions": submissions})
+            else:
+                self.write({"submissions": [sid.id for sid in SQLWrapper.get_all_submissions()]})
             self.flush()
         
 class GetSubmissionHandler(AuthenticatedHandlerBase):
