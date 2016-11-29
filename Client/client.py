@@ -1,8 +1,8 @@
 import sys
 from PySide import QtGui
-import pyside_dynamic
-import api_wrapper
-import custom_widgets
+import pyside_dynamic  # @UnresolvedImport
+import api_wrapper  # @UnresolvedImport
+import custom_widgets  # @UnresolvedImport
 
 class LoginDialog(QtGui.QDialog):
     
@@ -66,7 +66,7 @@ class MainWindow(QtGui.QMainWindow):
             self.actionSignIn.setVisible(False)
             self.actionSignOut.setVisible(True)
             self.statusBar.showMessage('Logged in as: {}'.format(self._wrapper.get_username()))
-            self.parent().update_table()
+            self.update_table()
     
     
     def init_ui(self):
