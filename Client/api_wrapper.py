@@ -1,6 +1,7 @@
 import requests
 
-connection_pointer = "printer-system-test.herokuapp.com"
+#connection_pointer = "printer-system-test.herokuapp.com"
+connection_pointer = "127.0.0.1:5000"
 
 class APIWrapper(object):
     
@@ -31,3 +32,10 @@ class APIWrapper(object):
             return []
         else:
             return all_response.json()['submissions']
+        
+    def get_user(self, username):
+        username_response = requests.get("http://{}/api/user".format(connection_pointer), data={"auth_id": self._auth_id, "username": username})
+        if username_response.status_code == 405:
+            return None
+        else:
+            return username_response.json()

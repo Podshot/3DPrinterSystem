@@ -109,6 +109,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>username_field</tabstop>
+  <tabstop>password_field</tabstop>
+  <tabstop>login_button</tabstop>
+  <tabstop>cancel_button</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

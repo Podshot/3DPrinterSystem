@@ -1,12 +1,40 @@
 import sys
 from PySide import QtGui
-import pyside_dynamic  # @UnresolvedImport
-import api_wrapper  # @UnresolvedImport
-import custom_widgets  # @UnresolvedImport
+import pyside_dynamic
+import api_wrapper
+import custom_widgets
+
+def calculate_position(parent, width, height):
+    return (parent.x() + ((parent.width() / 2) - (width / 2)), parent.y() + ((parent.height() / 2) - (height / 2)))
+
+class AccountEditingDialog(QtGui.QDialog):
+    
+
+    def fetch_user(self):
+        username = self.name_field.text()
+        user = self._wrapper.get_user(username)
+        
+        self.robotics_checkbox.setChecked(user['robotics'])
+        self.admin_checkbox.setChecked(user['admin'])
+    
+    def init_ui(self):
+        
+        pos = calculate_position(self.parent(), 400, 200)
+        self.setGeometry(pos[0], pos[1], 400, 200)
+        
+        self.fetch_button.clicked.connect(self.fetch_user)
+        self.show()
+    
+    def __init__(self, parent=None):
+        super(AccountEditingDialog, self).__init__(parent)
+        
+        pyside_dynamic.loadUi('Account_Dialog.ui', self)
+        
+        self._wrapper = self.parent()._wrapper
+        self.init_ui()
 
 class LoginDialog(QtGui.QDialog):
     
-
     def login(self):
         username = self.username_field.text()
         password = self.password_field.text()
@@ -17,19 +45,24 @@ class LoginDialog(QtGui.QDialog):
             self.parent()._wrapper = wrapper
             self.close()
     
-    
     def init_ui(self):
         self.failed_label.setVisible(False)
         
-        self.setGeometry(self.parent().x(), self.parent().y(), 400, 200)
+        pos = calculate_position(self.parent(), 400, 200)
+        self.setGeometry(pos[0], pos[1], 400, 200)
         self.login_button.clicked.connect(self.login)
-        self.cancel_button.clicked.connect(self.close)
+        if self._can_cancel:
+            self.cancel_button.clicked.connect(self.close)
+        else:
+            self.cancel_button.clicked.connect(sys.exit)
     
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, can_cancel=True):
         super(LoginDialog, self).__init__(parent)
         
         pyside_dynamic.loadUi('Login_Dialog.ui', self)
+        
+        self._can_cancel = can_cancel
         
         self.init_ui()
 
@@ -58,28 +91,31 @@ class MainWindow(QtGui.QMainWindow):
             
     
     def login(self):
-        dialog = LoginDialog(self)
+        dialog = LoginDialog(self, can_cancel=False)
         
         dialog.exec_()
         
         if self._wrapper:
-            self.actionSignIn.setVisible(False)
-            self.actionSignOut.setVisible(True)
             self.statusBar.showMessage('Logged in as: {}'.format(self._wrapper.get_username()))
             self.update_table()
+            
+    def edit_account(self):
+        dialog = AccountEditingDialog(self)
+        
+        dialog.exec_()
     
     
     def init_ui(self):
         self.statusBar.showMessage('Not logged in')
         
-        self.actionSignIn.triggered.connect(self.login)
-        
+        self.actionChangeAccountProperties.triggered.connect(self.edit_account)
         self.actionExit.triggered.connect(self.close)
         
         self.submissions_table.cellClicked.connect(self.cell_selected)
         self.test_button.clicked.connect(self.on_test_button_clicked)
         
         self.show()
+        self.login()
     
     
     def __init__(self):

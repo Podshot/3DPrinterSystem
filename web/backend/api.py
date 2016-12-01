@@ -104,7 +104,7 @@ class GetSubmissionHandler(AuthenticatedHandlerBase):
         
 class ModifySubmissionHandler(AuthenticatedHandlerBase):
     
-    def post(self): #TODO: Add authentication
+    def post(self):
         if self.api_authenticated():
             payload = self.request.json
             submission_id = payload["submission"]
@@ -118,4 +118,15 @@ class ModifySubmissionHandler(AuthenticatedHandlerBase):
                 self.set_header("Content-Type", "application/json")
                 self.write({"result": -1})
                 self.flush()
+                
+class GetUserInfoHandler(AuthenticatedHandlerBase):
+    
+    def get(self):
+        if self.api_authenticated():
+            username = self.get_argument("username")
+            account = SQLWrapper.get_account(username)
+            self.set_header("Content-Type", "application/json")
+            self.write({"admin": account.is_admin, "robotics": account.is_robotics})
+            self.flush()
+            
         
