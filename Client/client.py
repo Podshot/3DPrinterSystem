@@ -1,8 +1,9 @@
 import sys
-from PySide import QtGui
+from PySide import QtGui, QtCore
 import pyside_dynamic
 import api_wrapper
 import custom_widgets
+from datetime import datetime
 
 def calculate_position(parent, width, height):
     return (parent.x() + ((parent.width() / 2) - (width / 2)), parent.y() + ((parent.height() / 2) - (height / 2)))
@@ -17,12 +18,27 @@ class AccountEditingDialog(QtGui.QDialog):
         self.robotics_checkbox.setChecked(user['robotics'])
         self.admin_checkbox.setChecked(user['admin'])
     
+
+    def blacklist_change(self, state):
+        if state == QtCore.Qt.Checked:
+            self.blacklist_reason_field.setVisible(True)
+            self.blacklist_reason_label.setVisible(True)
+        else:
+            self.blacklist_reason_field.setVisible(False)
+            self.blacklist_reason_label.setVisible(False)
+    
+    
     def init_ui(self):
         
         pos = calculate_position(self.parent(), 400, 200)
         self.setGeometry(pos[0], pos[1], 400, 200)
         
+        self.blacklist_reason_field.setVisible(False)
+        self.blacklist_reason_label.setVisible(False)
+        
         self.fetch_button.clicked.connect(self.fetch_user)
+        self.blacklisted_checkbox.stateChanged.connect(self.blacklist_change)
+        
         self.show()
     
     def __init__(self, parent=None):
@@ -69,6 +85,23 @@ class LoginDialog(QtGui.QDialog):
 class MainWindow(QtGui.QMainWindow):
     default_title_text = '<b>Submission Title:</b> '
     default_status_text = '<b>Status:</b> '
+    
+    table_items = ["item_title", 'item_priority', 'item_date', 'item_for_robotics']
+    
+    def generate_row(self, row, submission):
+        data = {}
+        print submission['date']
+        print datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")
+        for (key, value) in submission.iteritems():
+            if key == 'date':
+                obj = QtGui.QTableWidgetItem(str(datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")))
+            else:
+                obj = QtGui.QTableWidgetItem(str(value))
+            data["item_" + key] = obj
+        for i in xrange(len(self.table_items)):
+            self.submissions_table.setItem(row, i, data.get(self.table_items[i]))
+        
+            
 
     def cell_selected(self, row, column):
         data = self.submissions[row]
@@ -80,14 +113,15 @@ class MainWindow(QtGui.QMainWindow):
     def update_table(self):
         self.submissions = self._wrapper.get_all_submissions()
         
+        self.submissions[:] = [sub for sub in self.submissions if sub.get('status') != 'completed' and sub.get('status') != 'denied']
+        
         self.submissions_table.setRowCount(len(self.submissions))
         for row in xrange(self.submissions_table.rowCount()):
-            item_title = QtGui.QTableWidgetItem(self.submissions[row]["title"])
-            item_priority = QtGui.QTableWidgetItem(str(self.submissions[row]['priority']))
-            setattr(item_title, 'id', self.submissions[row]['id'])
-            setattr(item_priority, 'id', self.submissions[row]['id'])
-            self.submissions_table.setItem(row, 0, item_title)
-            self.submissions_table.setItem(row, 1, item_priority)
+            self.generate_row(row, self.submissions[row])
+            #item_title = QtGui.QTableWidgetItem(self.submissions[row]["title"])
+            #item_priority = QtGui.QTableWidgetItem(str(self.submissions[row]['priority']))
+            #self.submissions_table.setItem(row, 0, item_title)
+            #self.submissions_table.setItem(row, 1, item_priority)
             
     
     def login(self):
@@ -112,7 +146,6 @@ class MainWindow(QtGui.QMainWindow):
         self.actionExit.triggered.connect(self.close)
         
         self.submissions_table.cellClicked.connect(self.cell_selected)
-        self.test_button.clicked.connect(self.on_test_button_clicked)
         
         self.show()
         self.login()

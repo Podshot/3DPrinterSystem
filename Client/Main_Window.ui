@@ -42,9 +42,9 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>0</y>
-      <width>311</width>
-      <height>301</height>
+      <y>10</y>
+      <width>301</width>
+      <height>261</height>
      </rect>
     </property>
     <property name="font">
@@ -56,7 +56,7 @@
      <enum>QFrame::StyledPanel</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+     <enum>QFrame::Sunken</enum>
     </property>
     <layout class="QFormLayout" name="formLayout_2">
      <property name="fieldGrowthPolicy">
@@ -82,7 +82,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QReadOnlyCheckBox" name="rafts_option">
        <property name="font">
         <font>
@@ -107,7 +107,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QReadOnlyCheckBox" name="supports_option">
        <property name="enabled">
         <bool>true</bool>
@@ -120,14 +120,45 @@
        </property>
       </widget>
      </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="color_label">
+       <property name="text">
+        <string>&lt;b&gt;Color:&lt;/b&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="infill_label">
+       <property name="text">
+        <string>&lt;b&gt;Infill:&lt;b/&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="detail_label">
+       <property name="text">
+        <string>&lt;b&gt;Detail Level:&lt;/b&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>24</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QTableWidget" name="submissions_table">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>431</width>
+      <x>10</x>
+      <y>10</y>
+      <width>471</width>
       <height>211</height>
      </rect>
     </property>
@@ -135,7 +166,7 @@
      <set>QAbstractItemView::NoEditTriggers</set>
     </property>
     <property name="selectionBehavior">
-     <enum>QAbstractItemView::SelectItems</enum>
+     <enum>QAbstractItemView::SelectRows</enum>
     </property>
     <property name="showGrid">
      <bool>true</bool>
@@ -150,8 +181,17 @@
      <number>0</number>
     </property>
     <property name="columnCount">
-     <number>2</number>
+     <number>4</number>
     </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>110</number>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="verticalHeaderStretchLastSection">
+     <bool>false</bool>
+    </attribute>
     <column>
      <property name="text">
       <string>Name</string>
@@ -162,19 +202,16 @@
       <string>Priority</string>
      </property>
     </column>
-   </widget>
-   <widget class="QPushButton" name="test_button">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>280</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
+    <column>
+     <property name="text">
+      <string>Date Submitted</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>For Robotics</string>
+     </property>
+    </column>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

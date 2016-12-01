@@ -1,7 +1,7 @@
 import requests
 
-#connection_pointer = "printer-system-test.herokuapp.com"
-connection_pointer = "127.0.0.1:5000"
+connection_pointer = "printer-system-test.herokuapp.com"
+#connection_pointer = "127.0.0.1:5000"
 
 class APIWrapper(object):
     
