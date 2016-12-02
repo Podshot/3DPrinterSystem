@@ -45,7 +45,7 @@ class LoginHijack(BaseProfileHandler):
         else:
             print "Did not successfully log in"
             self.write("Not logged in")
-        self.finish()
+            self.finish()
     
 class MainProfileHandler(BaseProfileHandler):
     
@@ -99,26 +99,13 @@ class SubmitHandler(BaseProfileHandler):
                 
             submission_id = str(uuid.uuid4())
             SQLWrapper.add_submission(submission_id, name, submission_data)
-            file_path = os.path.join(directories.upload_directory, submission_id + "$$" + filename)
+            file_path = os.path.join(directories.upload_directory, submission_id)
             
-            file_gz_obj = GzipFile(file_path + ".gz", 'wb')
+            file_gz_obj = GzipFile(file_path + ".stl.gz", 'wb')
             file_gz_obj.write(info['body'])
             file_gz_obj.close()
         
         #print "Content: {}".format(info["body"])
-class RemoveSubmissionHandler(BaseProfileHandler):
-    
-    @tornado.web.authenticated
-    def get(self, submission_id):
-        name = tornado.escape.xhtml_escape(self.current_user)
-        submission = SQLWrapper.get_submission(submission_id)
-        if submission.author == name:
-            SQLWrapper.delete_submission(submission_id)
-        self.redirect("/profile/submissions")
-        for f in glob.glob(os.path.join(directories.upload_directory, "*.stl.gz")):
-            f = os.path.basename(f)
-            if f.startswith(submission_id + "$$"):
-                os.remove(os.path.join(directories.upload_directory, f))
         
 class SubmissionsHandler(BaseProfileHandler):
     

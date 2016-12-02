@@ -2,10 +2,12 @@ import tornado.web
 from utils import SQLWrapper
 import requests
 import random
-from frontend.profile import LoginHijack
+from frontend.profile import LoginHijack, BaseProfileHandler
 import json
+from utils import directories
+import os
 
-class AuthenticatedHandlerBase(tornado.web.RequestHandler):
+class AuthenticatedHandlerBase(BaseProfileHandler):
     _auths = {}
     
     def __init__(self, application, request, **kwargs):
@@ -95,19 +97,19 @@ class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
         
 class GetSubmissionHandler(AuthenticatedHandlerBase):
     
-    def get(self):
+    def get(self, submission_id):
         if self.api_authenticated():
-            submission_id = self.get_argument("submission")
+            #submission_id = self.get_argument("submission")
             self.set_header("Content-Type", "application/json")
             self.write(SQLWrapper.get_submission(submission_id).data)
             self.flush()
         
 class ModifySubmissionHandler(AuthenticatedHandlerBase):
     
-    def post(self):
+    def post(self, submission_id):
         if self.api_authenticated():
             payload = self.request.json
-            submission_id = payload["submission"]
+            #submission_id = payload["submission"]
             data = payload["data"]
             if SQLWrapper.has_been_submitted(submission_id):
                 SQLWrapper.update_submission(submission_id, data)
@@ -119,6 +121,19 @@ class ModifySubmissionHandler(AuthenticatedHandlerBase):
                 self.write({"result": -1})
                 self.flush()
                 
+class RemoveSubmissionHandler(AuthenticatedHandlerBase):
+    
+    @tornado.web.authenticated
+    def get(self, submission_id):
+        name = tornado.escape.xhtml_escape(self.current_user)
+        submission = SQLWrapper.get_submission(submission_id)
+        if submission.author == name:
+            SQLWrapper.delete_submission(submission_id)
+        self.redirect("/profile/submissions")
+        submission_file_path = os.path.join(directories.upload_directory, submission_id + ".stl.gz")
+        if os.path.exists(submission_file_path):
+            os.remove(submission_file_path)
+                
 class GetUserInfoHandler(AuthenticatedHandlerBase):
     
     def get(self):
@@ -129,4 +144,16 @@ class GetUserInfoHandler(AuthenticatedHandlerBase):
             self.write({"admin": account.is_admin, "robotics": account.is_robotics})
             self.flush()
             
-        
+class GetSubmissionFile(AuthenticatedHandlerBase):
+    
+    def get(self, submission_id):
+            try:
+                with open(os.path.join(directories.upload_directory, '{}.stl.gz'.format(submission_id)), 'rb') as f:
+                    while True:
+                        data = f.read(1024)
+                        if not data:
+                            break
+                        self.write(data)
+                self.finish()
+            except:
+                pass

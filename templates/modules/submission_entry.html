@@ -1,7 +1,7 @@
 <!-- <div class="{{ status }}"> -->
 <div class="submission-{{ status }}">
     <p class="content">
-        <b>{{ title }}</b> (Submitted on {{ date }})<a class="actions" href="/profile/submissions/remove/{{ sub_id }}">Remove</a><br>
+        <b>{{ title }}</b> (Submitted on {{ date }})<a class="actions" href="/api/submission/{{ sub_id }}/remove">Remove</a><br>
         <p class="job_details">
             Requested Color: {{ options['color'].capitalize() }}
             <br />           

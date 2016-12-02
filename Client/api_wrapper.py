@@ -1,4 +1,5 @@
 import requests
+import gzip
 
 connection_pointer = "printer-system-test.herokuapp.com"
 #connection_pointer = "127.0.0.1:5000"
@@ -39,3 +40,17 @@ class APIWrapper(object):
             return None
         else:
             return username_response.json()
+        
+    def download_submitted_file(self, submission_id):
+        # NOTE the stream=True parameter
+        r = requests.get("http://{}/api/submission/{}/file".format(connection_pointer, submission_id), stream=True)
+        with open("{}.stl.gz".format(submission_id), 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024): 
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+                    
+        with gzip.open("{}.stl.gz".format(submission_id), 'rb') as f:
+            content = f.read()
+            with open("{}.stl".format(submission_id), 'wb') as out:
+                out.write(content)
+        return "{}.stl.gz".format(submission_id)
