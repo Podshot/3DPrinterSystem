@@ -4,6 +4,7 @@ import pyside_dynamic
 import api_wrapper
 import custom_widgets
 from datetime import datetime
+import os
 
 def calculate_position(parent, width, height):
     return (parent.x() + ((parent.width() / 2) - (width / 2)), parent.y() + ((parent.height() / 2) - (height / 2)))
@@ -83,8 +84,7 @@ class LoginDialog(QtGui.QDialog):
         self.init_ui()
 
 class MainWindow(QtGui.QMainWindow):
-    default_title_text = '<b>Submission Title:</b> '
-    default_status_text = '<b>Status:</b> '
+    default_options_text = '''<html><head/><body><p><span style=" font-size:9pt; font-weight:600;">{}: </span>{}</p></body></html>'''
     
     table_items = ["item_title", 'item_priority', 'item_date', 'item_for_robotics']
     
@@ -100,15 +100,34 @@ class MainWindow(QtGui.QMainWindow):
             data["item_" + key] = obj
         for i in xrange(len(self.table_items)):
             self.submissions_table.setItem(row, i, data.get(self.table_items[i]))
-        
             
-
+    def download_submission(self, sub_id):
+        
+        def func():
+            self.download_progressbar.setRange(0, 100)
+            percentage = self._wrapper.download_submitted_file(sub_id, os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions"))
+            for per in percentage:
+                if isinstance(per, float):
+                    self.download_progressbar.setValue(per)
+        
+        return func
+        
     def cell_selected(self, row, column):
         data = self.submissions[row]
         
-        self.title_label.setText(self.default_title_text + data["title"])
+        self.title_label.setText(self.default_options_text.format("Submission Title", data['title']))
+        
         self.rafts_option.setChecked(data['options']['rafts'])
         self.supports_option.setChecked(data['options']["supports"])
+        
+        self.color_label.setText(self.default_options_text.format("Color", data['options']['color'].capitalize()))
+        self.infill_label.setText(self.default_options_text.format('Infill', str(data['options']['infill']) + '%'))
+        
+        self.class_course_label.setText(self.default_options_text.format('Course Name', data['assignment'].get('class_name', '')))
+        self.class_teacher_label.setText(self.default_options_text.format('Teacher', data['assignment'].get('teacher', '')))
+        self.class_due_date_label.setText(self.default_options_text.format('Due Date', data['assignment'].get('due_date', '')))
+        
+        self.download_button.clicked.connect(self.download_submission(data['id']))
         
     def update_table(self):
         self.submissions = self._wrapper.get_all_submissions()

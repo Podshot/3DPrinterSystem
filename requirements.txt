@@ -1,3 +1,4 @@
 SQLAlchemy
 tornado
 requests
+psycopg2

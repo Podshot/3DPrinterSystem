@@ -46,6 +46,7 @@ if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(app)
     port = int(os.environ.get("PORT", 5000))
     print port
+    print os.environ['DATABASE_URL']
     http_server.listen(port)
     #http_server.listen(80)
     #app.listen(80)

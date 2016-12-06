@@ -1,5 +1,6 @@
 import requests
 import gzip
+import os
 
 connection_pointer = "printer-system-test.herokuapp.com"
 #connection_pointer = "127.0.0.1:5000"
@@ -41,16 +42,28 @@ class APIWrapper(object):
         else:
             return username_response.json()
         
-    def download_submitted_file(self, submission_id):
+    def download_submitted_file(self, submission_id, path):
         # NOTE the stream=True parameter
+        if not os.path.exists(path):
+            os.mkdir(path)
         r = requests.get("http://{}/api/submission/{}/file".format(connection_pointer, submission_id), stream=True)
-        with open("{}.stl.gz".format(submission_id), 'wb') as f:
+        total = int(r.headers.get('content-length'))
+        dl_path = os.path.join(path, "{}.stl.gz".format(submission_id))
+        unzip_path =  os.path.join(path, "{}.stl".format(submission_id))
+        with open(dl_path, 'wb') as f:
+            dl = 0
             for chunk in r.iter_content(chunk_size=1024): 
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
+                    dl += float(len(chunk))
+                    yield (dl / total) * 100
                     
-        with gzip.open("{}.stl.gz".format(submission_id), 'rb') as f:
+        with gzip.open(dl_path, 'rb') as f:
             content = f.read()
-            with open("{}.stl".format(submission_id), 'wb') as out:
+            with open(unzip_path, 'wb') as out:
                 out.write(content)
-        return "{}.stl.gz".format(submission_id)
+        try:
+            os.remove(dl_path)
+        except:
+            pass
+        yield unzip_path
