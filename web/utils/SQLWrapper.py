@@ -12,7 +12,10 @@ import os
 
 engine_path =  "sqlite:////" + os.path.join(directories.data_directory, "test.db").replace("\\", "/").replace("C:/", "")
 #_engine = create_engine('sqlite:////Users/Ben/Dropbox/3DPrinter/3DPrinter/data/test.db', echo=False)
-_engine = create_engine(engine_path)
+if os.environ.get('DATABASE_URL'):
+    _engine = create_engine(os.environ['DATABASE_URL'])
+else:
+    _engine = create_engine(engine_path)                 
 SQLBase = declarative_base(bind=_engine)
 
 fp = open(os.path.join(directories.data_directory, 'accounts.json'))
