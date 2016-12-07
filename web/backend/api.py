@@ -7,6 +7,17 @@ import json
 from utils import directories
 import os
 
+def api_tornado_wrapper(func):
+    
+    def wrapper(instance, submission_id):
+        if instance.request.headers.get("Content-Type") == "application/json":
+            if instance.api_authenticated():
+                return func(instance, submission_id)
+        else:
+            return tornado.web.authenticated(func)(instance, submission_id)
+    
+    return wrapper
+
 class AuthenticatedHandlerBase(BaseProfileHandler):
     _auths = {}
     
@@ -123,16 +134,16 @@ class ModifySubmissionHandler(AuthenticatedHandlerBase):
                 
 class RemoveSubmissionHandler(AuthenticatedHandlerBase):
     
-    @tornado.web.authenticated
+    @api_tornado_wrapper
     def get(self, submission_id):
         name = tornado.escape.xhtml_escape(self.current_user)
         submission = SQLWrapper.get_submission(submission_id)
         if submission.author == name:
             SQLWrapper.delete_submission(submission_id)
+            submission_file_path = os.path.join(directories.upload_directory, submission_id + ".stl.gz")
+            if os.path.exists(submission_file_path):
+                os.remove(submission_file_path)
         self.redirect("/profile/submissions")
-        submission_file_path = os.path.join(directories.upload_directory, submission_id + ".stl.gz")
-        if os.path.exists(submission_file_path):
-            os.remove(submission_file_path)
                 
 class GetUserInfoHandler(AuthenticatedHandlerBase):
     

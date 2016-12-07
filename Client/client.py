@@ -90,13 +90,14 @@ class MainWindow(QtGui.QMainWindow):
     
     def generate_row(self, row, submission):
         data = {}
-        print submission['date']
-        print datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")
+        #print submission['date']
+        #print datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")
         for (key, value) in submission.iteritems():
             if key == 'date':
                 obj = QtGui.QTableWidgetItem(str(datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")))
             else:
                 obj = QtGui.QTableWidgetItem(str(value))
+            setattr(obj, 'submission_id', submission['id'])
             data["item_" + key] = obj
         for i in xrange(len(self.table_items)):
             self.submissions_table.setItem(row, i, data.get(self.table_items[i]))
@@ -107,13 +108,32 @@ class MainWindow(QtGui.QMainWindow):
             self.download_progressbar.setRange(0, 100)
             percentage = self._wrapper.download_submitted_file(sub_id, os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions"))
             for per in percentage:
+                print per
                 if isinstance(per, float):
                     self.download_progressbar.setValue(per)
         
         return func
+    
+    def mark_submission(self, sub_id, status):
+        
+        def func():
+            self._wrapper.mark_submission(sub_id, status)
+            
+        return func
+    
+    def show_completed_change(self, state):
+        if state == QtCore.Qt.Checked:
+            self.submissions_table.setRowCount(len(self._all_submissions))
+            for row in xrange(self.submissions_table.rowCount()):
+                self.generate_row(row, self._all_submissions[row])
+        else:
+            self.submissions_table.setRowCount(len(self.submissions))
+            for row in xrange(self.submissions_table.rowCount()):
+                self.generate_row(row, self.submissions[row])
         
     def cell_selected(self, row, column):
-        data = self.submissions[row]
+        submission_id = self.submissions_table.item(row, column).submission_id
+        data = self.submission_map[submission_id]
         
         self.title_label.setText(self.default_options_text.format("Submission Title", data['title']))
         
@@ -127,12 +147,33 @@ class MainWindow(QtGui.QMainWindow):
         self.class_teacher_label.setText(self.default_options_text.format('Teacher', data['assignment'].get('teacher', '')))
         self.class_due_date_label.setText(self.default_options_text.format('Due Date', data['assignment'].get('due_date', '')))
         
-        self.download_button.clicked.connect(self.download_submission(data['id']))
+        try:
+            self.download_button.clicked.disconnect()
+        except:
+            pass
+        
+        self.download_button.clicked.connect(self.download_submission(submission_id))
+        
+        try:
+            self.completed_button.clicked.disconnect()
+            self.pending_button.clicked.disconnect()
+            self.denied_button.clicked.disconnect()
+        except:
+            pass
+        
+        self.completed_button.clicked.connect(self.mark_submission(submission_id, 'completed'))
+        self.pending_button.clicked.connect(self.mark_submission(submission_id, 'pending'))
+        self.denied_button.clicked.connect(self.mark_submission(submission_id, 'denied'))
         
     def update_table(self):
-        self.submissions = self._wrapper.get_all_submissions()
+        self._all_submissions = self._wrapper.get_all_submissions()
+        for sub in self._all_submissions:
+            self.submission_map[sub['id']] = sub
         
-        self.submissions[:] = [sub for sub in self.submissions if sub.get('status') != 'completed' and sub.get('status') != 'denied']
+        if self.show_completed_checkbox.isChecked():
+            self.submissions[:] = self._all_submissions
+        else:
+            self.submissions[:] = [sub for sub in self._all_submissions if sub.get('status') != 'completed' and sub.get('status') != 'denied']
         
         self.submissions_table.setRowCount(len(self.submissions))
         for row in xrange(self.submissions_table.rowCount()):
@@ -166,6 +207,11 @@ class MainWindow(QtGui.QMainWindow):
         
         self.submissions_table.cellClicked.connect(self.cell_selected)
         
+        self.show_completed_checkbox.stateChanged.connect(self.show_completed_change)
+        
+        #self.download_progressbar.setRange(0, 100)
+        #self.download_progressbar.setValue(0)
+          
         self.show()
         self.login()
     
@@ -180,6 +226,7 @@ class MainWindow(QtGui.QMainWindow):
         self._wrapper = None
         
         self.submissions = []
+        self.submission_map = {}
         
         self.init_ui()
         

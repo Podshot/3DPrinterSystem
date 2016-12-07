@@ -104,7 +104,7 @@
       <x>490</x>
       <y>10</y>
       <width>301</width>
-      <height>361</height>
+      <height>291</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
@@ -117,17 +117,17 @@
      <property name="verticalSpacing">
       <number>6</number>
      </property>
+     <item row="1" column="0">
+      <widget class="QLabel" name="detail_label">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Detail Level:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
      <item row="6" column="0">
       <widget class="QLabel" name="class_info_label">
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Class Info:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="color_label">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Color:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -138,66 +138,12 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="detail_label">
+     <item row="4" column="0">
+      <widget class="QLabel" name="color_label">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Detail Level:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Color:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QReadOnlyCheckBox" name="supports_option">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Supports</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QReadOnlyCheckBox" name="rafts_option">
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Rafts</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <property name="tristate">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="class_course_label">
@@ -228,6 +174,19 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QReadOnlyCheckBox" name="supports_option">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Supports</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="9" column="0">
       <widget class="QLabel" name="class_due_date_label">
        <property name="text">
@@ -241,6 +200,31 @@
        </property>
        <property name="indent">
         <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QReadOnlyCheckBox" name="rafts_option">
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Rafts</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -260,28 +244,14 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QPushButton" name="download_button">
-       <property name="text">
-        <string>Download</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="1">
-      <widget class="QPushButton" name="prepare_button">
-       <property name="text">
-        <string>Prepare</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>390</y>
-      <width>291</width>
+      <y>360</y>
+      <width>301</width>
       <height>41</height>
      </rect>
     </property>
@@ -293,30 +263,70 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item row="0" column="2">
       <widget class="QPushButton" name="denied_button">
        <property name="text">
         <string>Mark as Denied</string>
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pending_button">
+       <property name="text">
+        <string>Mark as Pending</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
-   <widget class="QProgressBar" name="download_progressbar">
+   <widget class="QCheckBox" name="show_completed_checkbox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>230</y>
+      <width>201</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show Completed/Denied Submissions</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>377</y>
-      <width>291</width>
-      <height>16</height>
+      <y>310</y>
+      <width>301</width>
+      <height>52</height>
      </rect>
     </property>
-    <property name="value">
-     <number>24</number>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="prepare_button">
+       <property name="text">
+        <string>Prepare</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="download_button">
+       <property name="text">
+        <string>Download</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QProgressBar" name="download_progressbar">
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

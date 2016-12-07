@@ -42,6 +42,19 @@ class APIWrapper(object):
         else:
             return username_response.json()
         
+    def mark_submission(self, submission, status):
+        update_response = requests.post('http://{}/api/submission/{}/update'.format(connection_pointer, submission), json={
+                                                                                                                           "auth_id": self._auth_id, 
+                                                                                                                           'data': {
+                                                                                                                                    'status': status
+                                                                                                                                    }
+                                                                                                                           }
+                                        )
+        if update_response.status_code == 405:
+            return False
+        else:
+            return True
+        
     def download_submitted_file(self, submission_id, path):
         # NOTE the stream=True parameter
         if not os.path.exists(path):
@@ -50,6 +63,7 @@ class APIWrapper(object):
         total = int(r.headers.get('content-length'))
         dl_path = os.path.join(path, "{}.stl.gz".format(submission_id))
         unzip_path =  os.path.join(path, "{}.stl".format(submission_id))
+        
         with open(dl_path, 'wb') as f:
             dl = 0
             for chunk in r.iter_content(chunk_size=1024): 
