@@ -203,6 +203,7 @@ class MainWindow(QtGui.QMainWindow):
         
         self.actionChangeAccountProperties.triggered.connect(self.edit_account)
         self.actionExit.triggered.connect(self.close)
+        self.actionRefresh.triggered.connect(self.update_table)
         
         self.submissions_table.cellClicked.connect(self.cell_selected)
         

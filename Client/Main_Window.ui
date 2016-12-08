@@ -107,7 +107,7 @@
       <height>291</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
+    <layout class="QGridLayout" name="gridLayout_2" columnstretch="0">
      <property name="sizeConstraint">
       <enum>QLayout::SetMaximumSize</enum>
      </property>
@@ -343,6 +343,7 @@
      <string>Application</string>
     </property>
     <addaction name="actionRefresh"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuAccount">
