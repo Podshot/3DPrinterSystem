@@ -10,6 +10,8 @@ from backend import GetAllSubmissionsHandler, GetSubmissionHandler, ModifySubmis
 
 from utils import directories
 
+paths = [directories.data_directory, directories.template_directory, directories.upload_directory]
+
 settings = {
     "cookie_secret": "test_cookie",
     "login_url": "/login",
@@ -24,6 +26,9 @@ class MainHandler(tornado.web.RequestHandler):
         self.redirect("/login")
 
 if __name__ == "__main__":
+    for _dir_ in paths:
+        if not os.path.exists(_dir_):
+            os.makedirs(_dir_)
     app = tornado.web.Application([
                                    (r"/", MainHandler),
                                    (r"/submit", SubmitHandler),
