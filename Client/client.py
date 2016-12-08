@@ -108,7 +108,6 @@ class MainWindow(QtGui.QMainWindow):
             self.download_progressbar.setRange(0, 100)
             percentage = self._wrapper.download_submitted_file(sub_id, os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions"))
             for per in percentage:
-                print per
                 if isinstance(per, float):
                     self.download_progressbar.setValue(per)
         

@@ -4,7 +4,7 @@ import requests
 import random
 from frontend.profile import LoginHijack, BaseProfileHandler
 import json
-from utils import directories
+from utils import directories, DropboxWrapper
 import os
 
 def api_tornado_wrapper(func):
@@ -140,9 +140,7 @@ class RemoveSubmissionHandler(AuthenticatedHandlerBase):
         submission = SQLWrapper.get_submission(submission_id)
         if submission.author == name:
             SQLWrapper.delete_submission(submission_id)
-            submission_file_path = os.path.join(directories.upload_directory, submission_id + ".stl.gz")
-            if os.path.exists(submission_file_path):
-                os.remove(submission_file_path)
+            DropboxWrapper.delete_submission(submission_id)
         self.redirect("/profile/submissions")
                 
 class GetUserInfoHandler(AuthenticatedHandlerBase):
@@ -158,8 +156,10 @@ class GetUserInfoHandler(AuthenticatedHandlerBase):
 class GetSubmissionFile(AuthenticatedHandlerBase):
     
     def get(self, submission_id):
+        target = os.path.join(directories.upload_directory, '{}.stl.gz'.format(submission_id))
+        if DropboxWrapper.get_submission(submission_id, target):
             try:
-                with open(os.path.join(directories.upload_directory, '{}.stl.gz'.format(submission_id)), 'rb') as f:
+                with open(target, 'rb') as f:
                     while True:
                         data = f.read(1024)
                         if not data:
@@ -168,3 +168,8 @@ class GetSubmissionFile(AuthenticatedHandlerBase):
                 self.finish()
             except:
                 pass
+            finally:
+                try:
+                    os.remove(target)
+                except:
+                    pass

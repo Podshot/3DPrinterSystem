@@ -7,7 +7,7 @@ from gzip import GzipFile
 import glob
 import uuid
 
-from utils import directories, SQLWrapper
+from utils import directories, SQLWrapper, DropboxWrapper
 
 class BaseProfileHandler(tornado.web.RequestHandler):
     
@@ -104,6 +104,11 @@ class SubmitHandler(BaseProfileHandler):
             file_gz_obj = GzipFile(file_path + ".stl.gz", 'wb')
             file_gz_obj.write(info['body'])
             file_gz_obj.close()
+            
+            with open('{}.stl.gz'.format(file_path), 'rb') as _in:
+                DropboxWrapper.add_submission(submission_id, _in.read())
+                
+            os.remove('{}.stl.gz'.format(file_path))
         
         #print "Content: {}".format(info["body"])
         
