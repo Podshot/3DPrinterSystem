@@ -69,4 +69,5 @@ target/
 #data/*.*
 #data/*.*
 #uploads/*.stl.gz
+/data/test.db
 

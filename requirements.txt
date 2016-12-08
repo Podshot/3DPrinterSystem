@@ -2,4 +2,4 @@ SQLAlchemy
 tornado
 requests
 psycopg2
-dropbox
+dropbox==7.1.1
