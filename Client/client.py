@@ -5,9 +5,18 @@ import api_wrapper
 import custom_widgets
 from datetime import datetime
 import os
+import subprocess
 
 def calculate_position(parent, width, height):
     return (parent.x() + ((parent.width() / 2) - (width / 2)), parent.y() + ((parent.height() / 2) - (height / 2)))
+
+def run_process(args):
+    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while proc.poll() is None:
+        line = proc.stdout.readline()
+        if line:
+            print '[{}]: {}'.format(os.path.basename(args[0]), )
+    return
 
 class AccountEditingDialog(QtGui.QDialog):
     
@@ -88,6 +97,13 @@ class MainWindow(QtGui.QMainWindow):
     
     table_items = ["item_title", 'item_priority', 'item_date', 'item_for_robotics']
     
+    def prepare_model(self, submission_id):
+        
+        def func():
+            pass
+        
+        return func
+    
     def generate_row(self, row, submission):
         data = {}
         #print submission['date']
@@ -110,6 +126,7 @@ class MainWindow(QtGui.QMainWindow):
             for per in percentage:
                 if isinstance(per, float):
                     self.download_progressbar.setValue(per)
+            self.prepare_button.setEnabled(True)
         
         return func
     
@@ -164,6 +181,21 @@ class MainWindow(QtGui.QMainWindow):
         self.pending_button.clicked.connect(self.mark_submission(submission_id, 'pending'))
         self.denied_button.clicked.connect(self.mark_submission(submission_id, 'denied'))
         
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id))):
+            self.prepare_button.setEnabled(True)
+            #self.viewer = custom_widgets.STLViewerWidget(self)
+            self.viewer.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
+            self.viewer.initializeGL()
+        else:
+            self.prepare_button.setEnabled(False)
+            
+        try:
+            self.prepare_button.clicked.disconnect()
+        except:
+            pass
+        
+        self.prepare_button.clicked.connect(self.prepare_model(submission_id))
+        
     def update_table(self):
         self._all_submissions = self._wrapper.get_all_submissions()
         for sub in self._all_submissions:
@@ -201,6 +233,11 @@ class MainWindow(QtGui.QMainWindow):
     def init_ui(self):
         self.statusBar.showMessage('Not logged in')
         
+        #geom = self.viewer.geometry()
+        #self.viewer = custom_widgets.STLViewerWidget()
+        #self.viewer.setGeometry(geom)
+        #self.viewer.open(os.path.join('submissions', 'bedf1621-f95a-496b-83b6-f20c3abe7f26.stl'))
+        
         self.actionChangeAccountProperties.triggered.connect(self.edit_account)
         self.actionExit.triggered.connect(self.close)
         self.actionRefresh.triggered.connect(self.update_table)
@@ -219,7 +256,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         custom_widgets_map = {
-                          'QReadOnlyCheckBox': custom_widgets.QReadOnlyCheckBox
+                          'QReadOnlyCheckBox': custom_widgets.QReadOnlyCheckBox,
+                          'STLViewerWidget': custom_widgets.STLViewerWidget,
                           }
         pyside_dynamic.loadUi("Main_Window.ui", self, custom_widgets_map)
         

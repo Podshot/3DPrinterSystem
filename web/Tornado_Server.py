@@ -6,7 +6,7 @@ import os
 
 from frontend.profile import MainProfileHandler, SubmissionsHandler, LoginHijack, NewSubmissionHandler, SubmitHandler
 from frontend import ui_modules
-from backend import GetAllSubmissionsHandler, GetSubmissionHandler, ModifySubmissionHandler, AuthenticationHandler, GetUserInfoHandler, GetSubmissionFile, RemoveSubmissionHandler
+from backend import GetAllSubmissionsHandler, GetSubmissionHandler, ModifySubmissionHandler, AuthenticationHandler, UnauthenticationHandler, GetUserInfoHandler, GetSubmissionFile, RemoveSubmissionHandler
 
 from utils import directories
 
@@ -40,12 +40,13 @@ if __name__ == "__main__":
                                    
                                    (r"/api/user", GetUserInfoHandler),
                                    (r"/api/authenticate", AuthenticationHandler),
+                                   (r"/api/unauthenticate", UnauthenticationHandler),
                                    (r"/api/submission/get_all", GetAllSubmissionsHandler),
                                    (r"/api/submission/([^/]+)", GetSubmissionHandler),
                                    
                                    (r"/api/submission/([^/]+)/update", ModifySubmissionHandler),
                                    (r"/api/submission/([^/]+)/remove", RemoveSubmissionHandler),
-                                   (r"/api/submission/([^/]+)/file", GetSubmissionFile)
+                                   (r"/api/submission/([^/]+)/file", GetSubmissionFile),
                                    ],
                                   **settings)
     http_server = tornado.httpserver.HTTPServer(app)

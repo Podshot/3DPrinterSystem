@@ -6,6 +6,7 @@ from frontend.profile import LoginHijack, BaseProfileHandler
 import json
 from utils import directories, DropboxWrapper
 import os
+import gzip
 
 def api_tornado_wrapper(func):
     
@@ -88,6 +89,10 @@ class AuthenticationHandler(AuthenticatedHandlerBase):
             self.write({"auth_id": -1})
         self.flush()
                 
+class UnauthenticationHandler(AuthenticatedHandlerBase):
+    
+    def get(self):
+        a_id = self.push(self.request.remote_ip if 'X-Forwarded-For' not in self.request.headers else self.request.headers['X-Forwarded-For'])
                 
 class GetAllSubmissionsHandler(AuthenticatedHandlerBase):
     

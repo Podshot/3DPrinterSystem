@@ -304,6 +304,9 @@
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="1">
       <widget class="QPushButton" name="prepare_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Prepare</string>
        </property>
@@ -327,6 +330,16 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="STLViewerWidget" name="viewer" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>461</width>
+      <height>291</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -380,6 +393,11 @@
    <class>QReadOnlyCheckBox</class>
    <extends>QCheckBox</extends>
    <header>qreadonlycheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>STLViewerWidget</class>
+   <extends>QWidget</extends>
+   <header>stlviewerwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
