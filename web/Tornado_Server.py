@@ -17,6 +17,7 @@ settings = {
     "login_url": "/login",
     "template_path": directories.template_directory,
     "ui_modules": ui_modules,
+    "static_path": directories.static_directory
     #"debug": True,
 }
 
@@ -30,6 +31,7 @@ if __name__ == "__main__":
         if not os.path.exists(_dir_):
             os.makedirs(_dir_)
     app = tornado.web.Application([
+                                   (r"/static/(.*)", tornado.web.StaticFileHandler, {'path': os.path.join(directories.static_directory, "EULA.txt")}),
                                    (r"/", MainHandler),
                                    (r"/submit", SubmitHandler),
                                    (r"/new_submission", NewSubmissionHandler),

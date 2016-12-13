@@ -2,25 +2,43 @@ import os
 
 
 data_directory = os.path.join(
-                              os.path.dirname(os.path.dirname(os.path.dirname(
-                                              os.path.abspath(
-                                                              __file__
+                              os.path.dirname(
+                                              os.path.dirname(
+                                                              os.path.abspath(
+                                                                              __file__
+                                                                              )
                                                               )
-                                              ))),
+                                              ),
                               "data")
 
 upload_directory = os.path.join(
-                                os.path.dirname(os.path.dirname(os.path.dirname(
-                                                os.path.abspath(
-                                                                __file__
+                                os.path.dirname(
+                                                os.path.dirname(
+                                                                os.path.abspath(
+                                                                                __file__
+                                                                                )
                                                                 )
-                                                ))), 
+                                                ),
                                 "uploads")
 
 template_directory = os.path.join(
-                                  os.path.dirname(os.path.dirname(os.path.dirname(
-                                                  os.path.abspath(
-                                                                  __file__
+                                  os.path.dirname(
+                                                  os.path.dirname(
+                                                                  os.path.abspath(
+                                                                                  __file__
+                                                                                  )
                                                                   )
-                                                  ))),
+                                                  ),
                                   "templates")
+
+static_directory = os.path.join(
+                                os.path.dirname(
+                                                os.path.dirname(
+                                                                os.path.abspath(
+                                                                                __file__
+                                                                                )
+                                                                )
+                                                ),
+                                "static")
+
+print template_directory

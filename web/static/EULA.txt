@@ -1,0 +1,10 @@
+By logging in and using this site (https://turpin-3d-printer.herokuapp.com), you agree to the following terms:
+
+    1. You knowingly are participating in an Open Beta Test and herby aknowledge the following terms:
+        1a. All submitted data may be removed at any point for any purpose.
+        1b. Any submitted data (IE: submitted files, submission names) may be shared at any time
+        1c. In an unlikely case, any submitted print jobs may not be completed without any prior notice due to techincal difficulties
+        1d. Wrongully using this site may prevent you from being able to use the final product
+        1d. Knowingly exploiting any bugs may result
+    2. Allowing any 3rd parties to use your credentials on this site for any profit or gain in any matter can result
+       in your account being blacklisted
