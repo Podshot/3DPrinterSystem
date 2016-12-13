@@ -186,6 +186,7 @@ class MainWindow(QtGui.QMainWindow):
             #self.viewer = custom_widgets.STLViewerWidget(self)
             self.viewer.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
             self.viewer.initializeGL()
+            self.viewer.repaint()
         else:
             self.prepare_button.setEnabled(False)
             
@@ -260,6 +261,21 @@ class MainWindow(QtGui.QMainWindow):
                           'STLViewerWidget': custom_widgets.STLViewerWidget,
                           }
         pyside_dynamic.loadUi("Main_Window.ui", self, custom_widgets_map)
+        self.viewer.setup(scale_widgets=[
+                                         self.x_scale, 
+                                         self.y_scale, 
+                                         self.z_scale
+                                         ],
+                          position_widgets=[
+                                            self.x_position,
+                                            self.y_position,
+                                            self.z_position
+                                            ],
+                          rotation_widgets=[
+                                            self.x_rotation,
+                                            self.y_rotation,
+                                            self.z_rotation
+                                            ])
         
         self._wrapper = None
         

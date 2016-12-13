@@ -75,14 +75,76 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
     cellsCount = 0
     pos = 1.0
 
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self,parent)
-        self.triangles = []
         self.object = 0
+        self.baseplate = 0
         self.xRot = 2440
         self.yRot = 2160
         self.zRot = 0
+        self.model = None
+        self.scale = [1.0, 1.0, 1.0]
+        self.position = [0.0, 0.0, 0.0]
+        self.rotation = [0.0, 0.0, 0.0]
+        
+        self.scale_widgets = None
+        self.position_widgets = None
+        self.rotation_widgets = None
+        
         self.lastPos = QtCore.QPoint()
+        
+    def setup(self, scale_widgets=None, position_widgets=None, rotation_widgets=None):
+        self.scale_widgets = scale_widgets
+        self.position_widgets = position_widgets
+        self.rotation_widgets = rotation_widgets
+        
+        self.scale_widgets[0].valueChanged.connect(self.x_scale_changed)
+        self.scale_widgets[1].valueChanged.connect(self.y_scale_changed)
+        self.scale_widgets[2].valueChanged.connect(self.z_scale_changed)
+        
+        self.position_widgets[0].valueChanged.connect(self.x_position_changed)
+        self.position_widgets[1].valueChanged.connect(self.y_position_changed)
+        self.position_widgets[2].valueChanged.connect(self.z_position_changed)
+        
+        self.rotation_widgets[0].valueChanged.connect(self.x_rotation_changed)
+        self.rotation_widgets[1].valueChanged.connect(self.y_rotation_changed)
+        self.rotation_widgets[2].valueChanged.connect(self.z_rotation_changed)
+        
+    def x_scale_changed(self, value):
+        self.scale[0] = value
+        self.repaint()
+        
+    def y_scale_changed(self, value):
+        self.scale[1] = value
+        self.repaint()
+        
+    def z_scale_changed(self, value):
+        self.scale[2] = value
+        self.repaint()
+        
+    def x_position_changed(self, value):
+        self.position[0] = value
+        self.repaint()
+        
+    def y_position_changed(self, value):
+        self.position[1] = value
+        self.repaint()
+        
+    def z_position_changed(self, value):
+        self.position[2] = value
+        self.repaint()
+    
+    def x_rotation_changed(self, value):
+        self.rotation[0] = value
+        self.repaint()
+    
+    def y_rotation_changed(self, value):
+        self.rotation[1] = value
+        self.repaint()
+        
+    def z_rotation_changed(self, value):
+        self.rotation[2] = value
+        self.repaint()
 
     def minimumSizeHint(self):
         return QtCore.QSize(50, 50)
@@ -112,6 +174,7 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         self.qglClearColor(QtGui.QColor.fromCmykF(0.2, 0.2, 0.2, 0.0))
         GL.glShadeModel(GL.GL_SMOOTH)
         
+        self.baseplate = self.makeBaseplate()
         self.object = self.makeObject()
         
         GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
@@ -120,9 +183,13 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         GL.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
         GL.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, [0.0, 1.0, 1.0, 0.0])
         
+        GL.glLightfv(GL.GL_LIGHT2, GL.GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
+        GL.glLightfv(GL.GL_LIGHT2, GL.GL_POSITION, [0.0, 1.0, 0.0, 0.0])
+        
         GL.glEnable(GL.GL_LIGHTING)
         GL.glEnable(GL.GL_LIGHT0)
         GL.glEnable(GL.GL_LIGHT1)
+        GL.glEnable(GL.GL_LIGHT2)
         
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
@@ -136,7 +203,13 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
         GL.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
         GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
+        GL.glCallList(self.baseplate)
+        
+        #GL.glPushMatrix()
+        GL.glTranslatef(self.position[0], self.position[1], self.position[2])
+        GL.glScalef(self.scale[0],self.scale[1],self.scale[2])
         GL.glCallList(self.object)
+        #GL.glPopMatrix()
         GL.glFlush()
 
     def resizeGL(self, width, height):
@@ -169,67 +242,90 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
             self.setXRotation(self.xRot + 8 * dy)
             self.setZRotation(self.zRot + 8 * dx)
         self.lastPos = QtCore.QPoint(event.pos())
-
-    def makeObject(self):
+        
+    def makeBaseplate(self):
         genList = GL.glGenLists(1)
         GL.glNewList(genList, GL.GL_COMPILE)
-        self.axis()
+        self.render_baseplate()
+        GL.glEndList()
+        return genList
+    
+    def makeObject(self):
+        genList = GL.glGenLists(2)
+        GL.glNewList(genList, GL.GL_COMPILE)
+        self.render_model()
         GL.glEndList()
         return genList
 
     def timerEvent(self, event):
         self.updateGL()
+        
+    def render_baseplate(self):
+        GL.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST) 
+        GL.glEnable(GL.GL_LINE_SMOOTH) 
+        GL.glEnable(GL.GL_BLEND) 
+        GL.glLineWidth(0.5) 
+        GL.glColor3f(0.0,0.0,0.0)
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.0, 0.0, 0.0, 0.0))
+        GL.glBegin(GL.GL_LINES) 
+        for i in range(self.fieldSize+1): 
+            GL.glVertex3f(-100, 0, (float(i)*10)-100) 
+            GL.glVertex3f(100, 0, (float(i)*10)-100) 
+  
+        for i in range(self.fieldSize+1): 
+            GL.glVertex3f((float(i)*10)-100, 0, -100) 
+            GL.glVertex3f((float(i)*10)-100, 0, 100) 
+        GL.glEnd() 
+        GL.glDisable(GL.GL_BLEND) 
+        GL.glDisable(GL.GL_LINE_SMOOTH) 
+        
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.5, 0.0, 0.0, 1.0))
+        GL.glLineWidth(2)
+        GL.glBegin(GL.GL_LINES) 
+        GL.glVertex3f(0,0,0.0) 
+        GL.glVertex3f(0,100,0.0) 
+        GL.glEnd() 
 
-    def axis(self):
+
+
+    def render_model(self):
         
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
-        GL.glCullFace(GL.GL_FRONT)
+        #GL.glCullFace(GL.GL_FRONT)
+        GL.glCullFace(GL.GL_BACK)
         
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.0, 0.5804, 1.0, 0.0))
-        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, (0.25, 0.25, 0.25, 1.0))
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, (0.25, 0.25, 0.25, 2.0))
         
         GL.glShadeModel(GL.GL_SMOOTH)
 
         GL.glBegin(GL.GL_TRIANGLES)
-        for triangle in self.triangles:
-            GL.glNormal3d(float(triangle.normal_x()), float(triangle.normal_y()), float(triangle.normal_z()))
-            for vert in triangle.vertices():
-                GL.glVertex3f(float(vert.x()), float(vert.y()), float(vert.z()))
-        
+        if self.model:
+            for facet in self.model.facets:
+                #GL.glNormal3d(facet.normal.x, facet.normal.y, facet.normal.z)
+                GL.glNormal3d(facet.normal.x, facet.normal.z, facet.normal.y)
+                for vertex in facet.vertices:
+                    #GL.glVertex3f(vertex.x, vertex.y, vertex.z)
+                    GL.glVertex3f(vertex.x, vertex.z, vertex.y)
         GL.glEnd()
         
         GL.glDisable(GL.GL_CULL_FACE)
         GL.glDisable(GL.GL_DEPTH_TEST)
 
     def open(self, fileName):
-        print fileName
         self.triangles = []
         if fileName:
-            binary = False
             try:
-                print "Trying ASCII loading"
+                #print "Trying ASCII loading"
                 with open(fileName, 'rb') as _in:
-                    stl.read_ascii_file(_in)
-                print "ASCII File"
+                    self.model = stl.read_ascii_file(_in)
+                #print "ASCII File"
             except:
-                print "Trying Binary loading"
-                fp_in = open(fileName, 'rb')
-                f = stl.read_binary_file(fp_in)
-                fp_in.close()
-                with open(fileName + "_", 'wb') as out:
-                    f.write_ascii(out)
-                print "Binary File"
-                binary = True
-            if binary:
-                file = open(fileName + '_')
-            else:
-                file = open(fileName)
-            lines = file.readlines()
-            for i in xrange(len(lines)):
-                line = lines[i].lstrip()
-                if line.startswith("facet normal"):
-                    self.triangles.append(Triangle(lines[i:i+5]))
+                #print "Trying Binary loading"
+                with open(fileName, 'rb') as _in:
+                    self.model = stl.read_binary_file(_in)
+                #print 'Binary file'
 
     def normalizeAngle(self, angle):
         while angle < 0:
