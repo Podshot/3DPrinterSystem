@@ -32,6 +32,7 @@ if __name__ == "__main__":
             os.makedirs(_dir_)
     app = tornado.web.Application([
                                    (r"/static/(.*)", tornado.web.StaticFileHandler, {'path': os.path.join(directories.static_directory, "EULA.txt")}),
+                                   
                                    (r"/", MainHandler),
                                    (r"/submit", SubmitHandler),
                                    (r"/new_submission", NewSubmissionHandler),

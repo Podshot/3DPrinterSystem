@@ -172,7 +172,7 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
 
     def initializeGL(self):
         self.qglClearColor(QtGui.QColor.fromCmykF(0.2, 0.2, 0.2, 0.0))
-        GL.glShadeModel(GL.GL_SMOOTH)
+        #GL.glShadeModel(GL.GL_SMOOTH)
         
         self.baseplate = self.makeBaseplate()
         self.object = self.makeObject()
@@ -198,6 +198,7 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
     def paintGL(self):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glLoadIdentity()
+        
         GL.glScalef(self.pos, self.pos, self.pos)
         GL.glTranslated(0.0, 0.0, -20.0)
         GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
@@ -205,11 +206,12 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
         GL.glCallList(self.baseplate)
         
-        #GL.glPushMatrix()
+        #GL.glTranslatef(self.position[0] * self.scale[0], self.position[1] * self.scale[1], self.position[2] * self.scale[2])
+        
         GL.glTranslatef(self.position[0], self.position[1], self.position[2])
         GL.glScalef(self.scale[0],self.scale[1],self.scale[2])
         GL.glCallList(self.object)
-        #GL.glPopMatrix()
+        
         GL.glFlush()
 
     def resizeGL(self, width, height):
@@ -268,11 +270,11 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         GL.glColor3f(0.0,0.0,0.0)
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.0, 0.0, 0.0, 0.0))
         GL.glBegin(GL.GL_LINES) 
-        for i in range(self.fieldSize+1): 
+        for i in xrange(self.fieldSize+1): 
             GL.glVertex3f(-100, 0, (float(i)*10)-100) 
             GL.glVertex3f(100, 0, (float(i)*10)-100) 
   
-        for i in range(self.fieldSize+1): 
+        for i in xrange(self.fieldSize+1): 
             GL.glVertex3f((float(i)*10)-100, 0, -100) 
             GL.glVertex3f((float(i)*10)-100, 0, 100) 
         GL.glEnd() 
@@ -280,6 +282,8 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         GL.glDisable(GL.GL_LINE_SMOOTH) 
         
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.5, 0.0, 0.0, 1.0))
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, (0.5, 0.0, 0.0, 1.0))
+        
         GL.glLineWidth(2)
         GL.glBegin(GL.GL_LINES) 
         GL.glVertex3f(0,0,0.0) 
@@ -292,21 +296,18 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
-        #GL.glCullFace(GL.GL_FRONT)
         GL.glCullFace(GL.GL_BACK)
         
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, (0.0, 0.5804, 1.0, 0.0))
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, (0.25, 0.25, 0.25, 2.0))
         
-        GL.glShadeModel(GL.GL_SMOOTH)
+        GL.glShadeModel(GL.GL_FLAT)
 
         GL.glBegin(GL.GL_TRIANGLES)
         if self.model:
             for facet in self.model.facets:
-                #GL.glNormal3d(facet.normal.x, facet.normal.y, facet.normal.z)
                 GL.glNormal3d(facet.normal.x, facet.normal.z, facet.normal.y)
                 for vertex in facet.vertices:
-                    #GL.glVertex3f(vertex.x, vertex.y, vertex.z)
                     GL.glVertex3f(vertex.x, vertex.z, vertex.y)
         GL.glEnd()
         

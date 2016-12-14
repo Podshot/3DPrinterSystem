@@ -6,9 +6,15 @@ import custom_widgets
 from datetime import datetime
 import os
 import subprocess
+import win32api
 
 def calculate_position(parent, width, height):
     return (parent.x() + ((parent.width() / 2) - (width / 2)), parent.y() + ((parent.height() / 2) - (height / 2)))
+
+def get_drives():
+    drives = win32api.GetLogicalDriveStrings()
+    drives = drives.split('\000')[:-1]
+    return drives
 
 def run_process(args):
     proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -16,7 +22,43 @@ def run_process(args):
         line = proc.stdout.readline()
         if line:
             print '[{}]: {}'.format(os.path.basename(args[0]), )
-    return
+            yield 0
+    yield 1
+
+class DriveSelectionDialog(QtGui.QDialog):
+    
+    def generate_function(self, drive):
+        
+        def func():
+            setattr(self.parent(), "_sd_drive", drive)
+        
+        return func
+
+    def init_ui(self):
+        drives = get_drives()
+        y = 35
+        
+        for i in xrange(len(drives)): # Use an integer loop to make Y positioning easier
+            r_button = QtGui.QRadioButton(drives[i], self)
+            r_button.toggled.connect(self.generate_function(drives[i]))
+            r_button.setGeometry(25, y + (25 * i), 82, 17)
+        
+        self.button_widget.setGeometry(10, y + (len(drives) * 25), 240, 40)
+        
+        self.confirm_button.clicked.connect(self.close)
+        self.cancel_button.clicked.connect(self.close)
+        
+        pos = calculate_position(self.parent(), 260, (y + 45) + (len(drives) * 25))
+        self.setGeometry(pos[0], pos[1], 260, (y + 45) + (len(drives) * 25))
+        
+        self.show()
+    
+    def __init__(self, parent=None):
+        super(DriveSelectionDialog, self).__init__(parent)
+        
+        pyside_dynamic.loadUi('Drive_Dialog.ui', self)
+        
+        self.init_ui()
 
 class AccountEditingDialog(QtGui.QDialog):
     
@@ -100,14 +142,16 @@ class MainWindow(QtGui.QMainWindow):
     def prepare_model(self, submission_id):
         
         def func():
-            pass
+            if not self._sd_drive:
+                dialog = DriveSelectionDialog(self)
+                
+                dialog.exec_()
+            
         
         return func
     
     def generate_row(self, row, submission):
         data = {}
-        #print submission['date']
-        #print datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")
         for (key, value) in submission.iteritems():
             if key == 'date':
                 obj = QtGui.QTableWidgetItem(str(datetime.strptime(submission['date'], "%B %d, %Y at %I:%M %p")))
@@ -181,12 +225,10 @@ class MainWindow(QtGui.QMainWindow):
         self.pending_button.clicked.connect(self.mark_submission(submission_id, 'pending'))
         self.denied_button.clicked.connect(self.mark_submission(submission_id, 'denied'))
         
-        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id))):
+        exists = os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
+        
+        if exists:
             self.prepare_button.setEnabled(True)
-            #self.viewer = custom_widgets.STLViewerWidget(self)
-            self.viewer.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
-            self.viewer.initializeGL()
-            self.viewer.repaint()
         else:
             self.prepare_button.setEnabled(False)
             
@@ -196,6 +238,12 @@ class MainWindow(QtGui.QMainWindow):
             pass
         
         self.prepare_button.clicked.connect(self.prepare_model(submission_id))
+        self.repaint()
+        
+        if exists:
+            self.viewer.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
+            self.viewer.initializeGL()
+            self.viewer.repaint()
         
     def update_table(self):
         self._all_submissions = self._wrapper.get_all_submissions()
@@ -210,10 +258,6 @@ class MainWindow(QtGui.QMainWindow):
         self.submissions_table.setRowCount(len(self.submissions))
         for row in xrange(self.submissions_table.rowCount()):
             self.generate_row(row, self.submissions[row])
-            #item_title = QtGui.QTableWidgetItem(self.submissions[row]["title"])
-            #item_priority = QtGui.QTableWidgetItem(str(self.submissions[row]['priority']))
-            #self.submissions_table.setItem(row, 0, item_title)
-            #self.submissions_table.setItem(row, 1, item_priority)
             
     
     def login(self):
@@ -278,14 +322,12 @@ class MainWindow(QtGui.QMainWindow):
                                             ])
         
         self._wrapper = None
+        self._sd_drive = None
         
         self.submissions = []
         self.submission_map = {}
         
         self.init_ui()
-        
-    def on_test_button_clicked(self):
-        print "Test!"
 
 
 if __name__ == "__main__":

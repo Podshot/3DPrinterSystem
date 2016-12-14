@@ -2,7 +2,7 @@ import requests
 import gzip
 import os
 
-connection_pointer = "printer-system-test.herokuapp.com"
+connection_pointer = "turpin-3d-printer.herokuapp.com"
 #connection_pointer = "127.0.0.1:5000"
 
 class APIWrapper(object):
