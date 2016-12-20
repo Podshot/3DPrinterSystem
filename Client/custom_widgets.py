@@ -1,7 +1,8 @@
-from PySide import QtGui, QtOpenGL, QtCore
-import stl
-import sys
+from PySide import QtGui#, QtOpenGL, QtCore
+#import stl
+#import sys
 
+'''
 try:
     import OpenGL.GL as GL
 except ImportError:
@@ -11,6 +12,7 @@ except ImportError:
                             QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
                             QtGui.QMessageBox.NoButton)
     sys.exit(1)
+'''
 
 
 class QReadOnlyCheckBox(QtGui.QCheckBox):
@@ -67,6 +69,7 @@ class Triangle:
     def normal_z(self):
         return self._normal_z
     
+'''
 class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
     timerId= 0
     fieldSize = 20
@@ -334,3 +337,4 @@ class STLViewerWidget(QtOpenGL.QGLWidget,QtGui.QWidget):
         while angle > 360 * 16:
             angle -= 360 * 16
         return angle
+'''

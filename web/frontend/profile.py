@@ -7,6 +7,9 @@ from gzip import GzipFile
 import glob
 import uuid
 
+import urllib3
+urllib3.disable_warnings()
+
 from utils import directories, SQLWrapper, DropboxWrapper
 
 class BaseProfileHandler(tornado.web.RequestHandler):
@@ -36,7 +39,7 @@ class LoginHijack(BaseProfileHandler):
                  "username": username,
                  "password": password
                  }
-        response = requests.post("http://schoologyauth.foresthills.edu/userAuth.php", data=login)
+        response = requests.post("http://schoologyauth.foresthills.edu/userAuth.php", verify=False, data=login)
         if self._login_successful(response):
             print 'Successfully logged in'
             self.set_secure_cookie("user", username)

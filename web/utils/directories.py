@@ -40,5 +40,3 @@ static_directory = os.path.join(
                                                                 )
                                                 ),
                                 "static")
-
-print template_directory

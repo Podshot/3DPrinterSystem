@@ -12,6 +12,22 @@
             Supports: {{ str(options['supports']).capitalize() }}
             <br />
             Infill: {{ options['infill'] }}%
+            <br />
+            {% if options.get('scale') != None %}
+            Scale (Xmm, Ymm, Zmm): {{ str(options['scale']).replace(',', 'mm,') }}
+            <br />
+            {% end %}
+            
+            {% if options.get('rotation') != None %}
+            Rotation (X&deg, Y&deg, Z&deg): {{ str(options['rotation']).replace(',', '&deg,') }}
+            <br />
+            {% end %}
+            
+            {% if options.get('position') != None %}
+            Position (Xmm, Ymm, Zmm): {{ str(options['position']).replace(',', 'mm,') }}
+            <br />
+            {% end %}
+            
 			{% if assignment != {} %}
 			<h4 class="assignment_header">Assignment Details</h4>
 			<p class="class_details">
@@ -21,8 +37,9 @@
 				<br />
 				Due Date: {{ datetime.datetime.strftime(datetime.datetime.strptime(assignment['due_date'], "%m-%d-%Y"),"%B %d, %Y")}}
 			</p>
+            <br />
 			{% end %}
-			<br />
+            
 			{% if for_robotics %}
 			For Robotics: True
 			{% end %}

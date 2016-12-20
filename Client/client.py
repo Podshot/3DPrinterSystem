@@ -16,15 +16,6 @@ def get_drives():
     drives = drives.split('\000')[:-1]
     return drives
 
-def run_process(args):
-    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    while proc.poll() is None:
-        line = proc.stdout.readline()
-        if line:
-            print '[{}]: {}'.format(os.path.basename(args[0]), )
-            yield 0
-    yield 1
-
 class DriveSelectionDialog(QtGui.QDialog):
     
     def generate_function(self, drive):
@@ -142,12 +133,8 @@ class MainWindow(QtGui.QMainWindow):
     def prepare_model(self, submission_id):
         
         def func():
-            if not self._sd_drive:
-                dialog = DriveSelectionDialog(self)
-                
-                dialog.exec_()
+            os.startfile(os.path.join('submissions', '{}.stl'.format(submission_id)))
             
-        
         return func
     
     def generate_row(self, row, submission):
@@ -207,6 +194,14 @@ class MainWindow(QtGui.QMainWindow):
         self.class_teacher_label.setText(self.default_options_text.format('Teacher', data['assignment'].get('teacher', '')))
         self.class_due_date_label.setText(self.default_options_text.format('Due Date', data['assignment'].get('due_date', '')))
         
+        self.scale_x_label.setText(str(float(data['options'].get("scale", (1, 1, 1))[0])))
+        self.scale_y_label.setText(str(float(data['options'].get("scale", (1, 1, 1))[1])))
+        self.scale_z_label.setText(str(float(data['options'].get("scale", (1, 1, 1))[2])))
+        
+        self.rotation_x_label.setText(str(float(data['options'].get("rotation", (0, 0, 0))[0])))
+        self.rotation_y_label.setText(str(float(data['options'].get("rotation", (0, 0, 0))[1])))
+        self.rotation_z_label.setText(str(float(data['options'].get("rotation", (0, 0, 0))[2])))  
+        
         try:
             self.download_button.clicked.disconnect()
         except:
@@ -239,11 +234,6 @@ class MainWindow(QtGui.QMainWindow):
         
         self.prepare_button.clicked.connect(self.prepare_model(submission_id))
         self.repaint()
-        
-        if exists:
-            self.viewer.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submissions", '{}.stl'.format(submission_id)))
-            self.viewer.initializeGL()
-            self.viewer.repaint()
         
     def update_table(self):
         self._all_submissions = self._wrapper.get_all_submissions()
@@ -278,11 +268,6 @@ class MainWindow(QtGui.QMainWindow):
     def init_ui(self):
         self.statusBar.showMessage('Not logged in')
         
-        #geom = self.viewer.geometry()
-        #self.viewer = custom_widgets.STLViewerWidget()
-        #self.viewer.setGeometry(geom)
-        #self.viewer.open(os.path.join('submissions', 'bedf1621-f95a-496b-83b6-f20c3abe7f26.stl'))
-        
         self.actionChangeAccountProperties.triggered.connect(self.edit_account)
         self.actionExit.triggered.connect(self.close)
         self.actionRefresh.triggered.connect(self.update_table)
@@ -290,9 +275,6 @@ class MainWindow(QtGui.QMainWindow):
         self.submissions_table.cellClicked.connect(self.cell_selected)
         
         self.show_completed_checkbox.stateChanged.connect(self.show_completed_change)
-        
-        #self.download_progressbar.setRange(0, 100)
-        #self.download_progressbar.setValue(0)
           
         self.show()
         self.login()
@@ -302,27 +284,11 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
         custom_widgets_map = {
                           'QReadOnlyCheckBox': custom_widgets.QReadOnlyCheckBox,
-                          'STLViewerWidget': custom_widgets.STLViewerWidget,
+                          #'STLViewerWidget': custom_widgets.STLViewerWidget,
                           }
-        pyside_dynamic.loadUi("Main_Window.ui", self, custom_widgets_map)
-        self.viewer.setup(scale_widgets=[
-                                         self.x_scale, 
-                                         self.y_scale, 
-                                         self.z_scale
-                                         ],
-                          position_widgets=[
-                                            self.x_position,
-                                            self.y_position,
-                                            self.z_position
-                                            ],
-                          rotation_widgets=[
-                                            self.x_rotation,
-                                            self.y_rotation,
-                                            self.z_rotation
-                                            ])
+        pyside_dynamic.loadUi("Main_Window_v2.ui", self, custom_widgets_map)
         
         self._wrapper = None
-        self._sd_drive = None
         
         self.submissions = []
         self.submission_map = {}

@@ -15,10 +15,10 @@ paths = [directories.data_directory, directories.template_directory, directories
 settings = {
     "cookie_secret": "test_cookie",
     "login_url": "/login",
-    "template_path": directories.template_directory,
+    "template_path": os.path.join(directories.template_directory, "bootstrap"),
     "ui_modules": ui_modules,
-    "static_path": directories.static_directory
-    #"debug": True,
+    "static_path": directories.static_directory,
+    "debug": True,
 }
 
 class MainHandler(tornado.web.RequestHandler):
