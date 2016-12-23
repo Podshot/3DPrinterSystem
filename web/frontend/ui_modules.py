@@ -1,5 +1,7 @@
 import tornado.web
 import copy
+from utils import directories
+import os
     
 class Submission(tornado.web.UIModule):
     
@@ -48,4 +50,4 @@ class Submission(tornado.web.UIModule):
     def render(self, sub):
         entry = copy.deepcopy(sub.data)
         entry["sub_id"] = sub.id
-        return self.render_string("modules/submission_entry.html", **entry)
+        return self.render_string(os.path.join(directories.template_directory, "bootstrap","modules", "submission_entry.html"), **entry)

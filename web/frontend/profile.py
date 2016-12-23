@@ -28,7 +28,8 @@ class LoginHijack(BaseProfileHandler):
         return (history and (data.url == "https://app.schoology.com/home"))
     
     def get(self):
-        self.render("login.html")
+        _failed = bool(int(self.get_argument("f", 0)))
+        self.render("login.html", failed=_failed)
        
     @tornado.web.asynchronous 
     def post(self):
@@ -41,14 +42,10 @@ class LoginHijack(BaseProfileHandler):
                  }
         response = requests.post("http://schoologyauth.foresthills.edu/userAuth.php", verify=False, data=login)
         if self._login_successful(response):
-            print 'Successfully logged in'
             self.set_secure_cookie("user", username)
-            #self.set_status(202)
             self.redirect("profile")
         else:
-            print "Did not successfully log in"
-            self.write("Not logged in")
-            self.finish()
+            self.redirect("login?f=1")
     
 class MainProfileHandler(BaseProfileHandler):
     
@@ -71,7 +68,7 @@ class SubmitHandler(BaseProfileHandler):
     @tornado.web.authenticated
     def post(self):
         name = tornado.escape.xhtml_escape(self.current_user)
-        #print self.get_argument("file")
+        
         info = self.request.files["file"][0]
         filename = info["filename"]
         filename = tornado.web.escape.xhtml_escape(os.path.basename(filename)).replace("$$", "_._")
@@ -112,8 +109,6 @@ class SubmitHandler(BaseProfileHandler):
                 DropboxWrapper.add_submission(submission_id, _in.read())
                 
             os.remove('{}.stl.gz'.format(file_path))
-        
-        #print "Content: {}".format(info["body"])
         
 class SubmissionsHandler(BaseProfileHandler):
     

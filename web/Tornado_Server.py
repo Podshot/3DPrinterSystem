@@ -18,7 +18,7 @@ settings = {
     "template_path": os.path.join(directories.template_directory, "bootstrap"),
     "ui_modules": ui_modules,
     "static_path": directories.static_directory,
-    "debug": True,
+    #"debug": True,
 }
 
 class MainHandler(tornado.web.RequestHandler):
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         if not os.path.exists(_dir_):
             os.makedirs(_dir_)
     app = tornado.web.Application([
-                                   (r"/static/(.*)", tornado.web.StaticFileHandler, {'path': os.path.join(directories.static_directory, "EULA.txt")}),
+                                   (r"/static/(.*)", tornado.web.StaticFileHandler, {'path': directories.static_directory }),
                                    
                                    (r"/", MainHandler),
                                    (r"/submit", SubmitHandler),
@@ -53,7 +53,7 @@ if __name__ == "__main__":
                                    ],
                                   **settings)
     http_server = tornado.httpserver.HTTPServer(app)
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 80))
     http_server.listen(port)
     #http_server.listen(80)
     #app.listen(80)

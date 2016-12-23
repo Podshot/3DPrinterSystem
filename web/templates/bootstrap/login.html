@@ -22,6 +22,13 @@
                         <input type="password" name="password" id="password" class="form-control" required=true>
                     </div>
                 </div>
+				{% if failed%}
+					<div class="col-sm-offset-1 col-sm-10">
+					<div class="alert alert-danger">
+						Wrong username or password. Please try again
+					</div>
+					</div>
+				{% end %}
                 <div class="form-group">        
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-success">Submit</button>
