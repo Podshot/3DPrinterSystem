@@ -4,7 +4,8 @@ import traceback
 
 token = os.environ.get('DROPBOX_ACCESS_TOKEN')
 if not token:
-    token = raw_input("Dropbox API Token: ")
+    import config
+    token = os.environ.get('DROPBOX_ACCESS_TOKEN')
 
 box = dropbox.Dropbox(token)
 

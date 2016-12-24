@@ -1,49 +1,23 @@
-<!-- <div class="{{ status }}"> -->
-<div class="submission-{{ status }}">
-    <p class="content">
-        <b>{{ title }}</b> (Submitted on {{ date }})<a class="btn-sm btn-danger actions" href="/api/submission/{{ sub_id }}/remove">Remove</a><br>
-        <p class="job_details">
-            Requested Color: {{ options['color'].capitalize() }}
-            <br />           
-            Detail Level: {{ options['detail_name'].capitalize() }} ({{ options['detail_height'] }}mm)
-            <br />
-            Rafts: {{ str(options['rafts']).capitalize() }}
-            <br />
-            Supports: {{ str(options['supports']).capitalize() }}
-            <br />
-            Infill: {{ options['infill'] }}%
-            <br />
-            {% if options.get('scale') != None %}
-            Scale (Xmm, Ymm, Zmm): {{ str(options['scale']).replace(',', 'mm,') }}
-            <br />
-            {% end %}
-            
-            {% if options.get('rotation') != None %}
-            Rotation (X&deg, Y&deg, Z&deg): {{ str(options['rotation']).replace(',', '&deg,') }}
-            <br />
-            {% end %}
-            
-            {% if options.get('position') != None %}
-            Position (Xmm, Ymm, Zmm): {{ str(options['position']).replace(',', 'mm,') }}
-            <br />
-            {% end %}
-            
+<div class="panel panel-{{ status }}">
+	<div class="panel-heading">{{ title }}</div>
+	<div class="panel-body">
+		<div class="col-sm-2">
+			<div class="row">Requested Color: {{ options['color'].capitalize() }}</div>
+			<div class="row">Detail Level: {{ options['detail_name'].capitalize() }} ({{ options['detail_height'] }}mm)</div>
+			<div class="row">Rafts: {{ str(options['rafts']).capitalize() }}</div>
+			<div class="row">Supports: {{ str(options['supports']).capitalize() }}</div>
+			<div class="row">Infill: {{ options['infill'] }}%</div>
 			{% if assignment != {} %}
-			<h4 class="assignment_header">Assignment Details</h4>
-			<p class="class_details">
-				Class: {{ assignment['class_name'] }}
-				<br />
-				Teacher: {{ assignment['teacher'] }}
-				<br />
-				Due Date: {{ datetime.datetime.strftime(datetime.datetime.strptime(assignment['due_date'], "%m-%d-%Y"),"%B %d, %Y")}}
-			</p>
-            <br />
+			<div class="row"><b>Assignment Details</b></div>
+			<div class="col-sm col-sm-offset-1">
+				<div class="row">Class: {{ assignment['class_name'] }}</div>
+				<div class="row">Teacher: {{ assignment['teacher'] }}</div>
+				<div class="row">Due Date: {{ datetime.datetime.strftime(datetime.datetime.strptime(assignment['due_date'], "%m-%d-%Y"),"%B %d, %Y")}}</div>
+			</div>
 			{% end %}
-            
-			{% if for_robotics %}
-			For Robotics: True
-			{% end %}
-        </p>
-    </p>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<a class="btn-sm btn-danger" href="/api/submission/{{ sub_id }}/remove">Remove</a>
+	</div>
 </div>
-<br>

@@ -6,19 +6,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
-    <body>
-		{% module Navbar("submissions", True) %}
-		<div class="container-fluid">
-			<div class="panel-group">
-			<br>
-				{% if ids %}
-					{% for i in xrange(len(ids)) %}
-						{% module Submission(ids[i]) %}
-					{% end %}
-				{% else %}
-					<b>You have not submitted any 3D models to print</b>
-				{% end %}
-			</div>
-		</div>
-    </body>
+	<body>
+		{% module Navbar("landing", False) %}
+	</body>
 </html>

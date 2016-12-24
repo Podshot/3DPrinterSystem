@@ -1,0 +1,53 @@
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>                        
+			</button>
+			<a class="navbar-brand">Turpin 3D Printer</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+			{% if page == "landing" %}
+				<li class="active"><a href="#">Home</a></li>
+			{% else %}
+				<li><a href="/landing">Home</a></li>
+			{% end %}
+			
+			{% if page == "new_submission" %}
+				<li class="active"><a href="#">Create a Submission</a></li>
+			{% else %}
+				<li><a href="/new_submission">Create a Submission</a></li>
+			{% end %}
+			
+			{% if page == "submissions" %}
+				<li class="active"><a href="#">View your Submissions</a></li>
+			{% else %}
+				<li><a href="/profile/submissions">View your Submissions</a></li>
+			{% end %}
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown" href="#">About
+					<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><p class="navbar-text">Created by Ben Gothard</p></li>
+						<li><p class="navbar-text">Running version v{{ version }}</p></li>
+					</ul>
+				</li>
+				{% if logged_in %}
+					<li><a href="/profile"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+					<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Log Out</a></li>
+				{% else %}
+					{% if page != "login" %}
+						<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+					{% else %}
+						<li class="active"><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+					{% end %}
+				{% end %}
+			</ul>
+		</div>
+	</div>
+</nav>

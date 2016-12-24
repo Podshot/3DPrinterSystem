@@ -66,8 +66,9 @@ target/
 *.iml
 
 # User Data
-#data/*.*
-#data/*.*
-#uploads/*.stl.gz
+data/*.*
+data/*.*
+uploads/*.stl.gz
 /data/test.db
+/web/*.cfg
 

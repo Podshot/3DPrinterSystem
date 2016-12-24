@@ -7,6 +7,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body>
+	{% module Navbar("login", False) %}
         <div class="container-fluid">
             <h3>Login</h3>
             <form action="/login" method="post" class="form-horizontal">
@@ -22,7 +23,7 @@
                         <input type="password" name="password" id="password" class="form-control" required=true>
                     </div>
                 </div>
-				{% if failed%}
+				{% if failed %}
 					<div class="col-sm-offset-1 col-sm-10">
 					<div class="alert alert-danger">
 						Wrong username or password. Please try again
